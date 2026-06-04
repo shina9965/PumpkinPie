@@ -1,3 +1,5 @@
-public class SignalWindowController extends WindowController implements ActionListener {
+package uiController;
+
+public class SignalWindowController extends WindowController{
 
 }

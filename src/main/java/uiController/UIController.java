@@ -1,3 +1,5 @@
-public class UIController {
+package uiController;
 
+public class UIController {
+  
 }

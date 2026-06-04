@@ -1,3 +1,6 @@
-public class HomeConstroller extends WindowController implements ActionListener {
+package uiController;
+
+
+public class HomeConstroller extends WindowController{
 
 }

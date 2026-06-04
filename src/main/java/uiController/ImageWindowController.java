@@ -1,3 +1,5 @@
-public class ImageWindowController extends WindowController implements ActionListener {
+package uiController;
+
+public class ImageWindowController extends WindowController{
 
 }
