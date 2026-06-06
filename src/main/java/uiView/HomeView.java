@@ -1,40 +1,34 @@
 package uiView;
 
 import listener.ActionListener;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import uiModel.HomeModel;
 
 
 public class HomeView {
 
   private ActionListener uiListener;
   private Stage aStage;
-  private final static String TITLE = "Pumpkin Pie"; 
-  private final static double SPACING = 20;
 
   public HomeView(ActionListener uiListener, Stage aStage) {
     this.uiListener = uiListener;
     this.aStage = aStage;
   }
 
-  public void createScene(Point2D size) {
+  public void createScene(HomeModel homeModel) {
     System.out.println("HomeView: createScene");
 
-    VBox root = new VBox(SPACING);
-    Label title = createTitle();
-    Scene scene = new Scene(root, size.getX(), size.getY());
+    VBox root = new VBox(homeModel.getSpacing());
+    Label title = createTitle(homeModel.getTitle());
+    Scene scene = new Scene(root, homeModel.getDisplaySize().getX(), homeModel.getDisplaySize().getY());
 
-    Button signalButton = createButton("信号処理");
-    Button imageButton = createButton("画像処理");
-    Button settingButton = createButton("設定");
-    signalButton.setOnAction(event -> uiListener.actionPerformed(event));
-    imageButton.setOnAction(event -> uiListener.actionPerformed(event));
-    settingButton.setOnAction(event -> uiListener.actionPerformed(event));
-
+    Button signalButton = createButton(homeModel.getSignalButtonText());
+    Button imageButton = createButton(homeModel.getImageButtonText());
+    Button settingButton = createButton(homeModel.getSettingButtonText());
 
     root.getChildren().addAll(title, signalButton, imageButton, settingButton);
     aStage.setScene(scene);
@@ -44,13 +38,16 @@ public class HomeView {
   public Button createButton(String text) {
     System.out.println("HomeView: createButton");
 
-    return new Button(text);
+    Button button = new Button(text);
+    button.setOnAction(event -> uiListener.actionPerformed(event));
+
+    return button;
   }
 
-  public Label createTitle() {
+  public Label createTitle(String text) {
     System.out.println("HomeView: createTitle");
 
-    return new Label(TITLE);
+    return new Label(text);
   }
 
 }

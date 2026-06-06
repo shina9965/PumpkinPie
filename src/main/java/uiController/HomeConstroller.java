@@ -2,6 +2,7 @@ package uiController;
 
 import javafx.stage.Stage;
 import listener.ActionListener;
+import javafx.event.ActionEvent;
 
 import uiView.HomeView;
 import uiModel.HomeModel;
@@ -21,14 +22,17 @@ public class HomeConstroller extends WindowController{
 
 
   public void initState() {
+
     System.out.println("HomeConstroller: initState");
+
+    homeView.createScene(homeModel);
   }
 
   public void endState() {
     System.out.println("HomeConstroller: endState");
   }
 
-  public void actionPerformed(javafx.event.ActionEvent event) {
+  public void actionPerformed(ActionEvent event) {
     System.out.println("HomeConstroller: actionPerformed");
 
     

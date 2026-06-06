@@ -32,7 +32,7 @@ public class HomeViewTest extends ApplicationTest {
 
     interact(() -> {
       HomeView homeView = new HomeView(listener, stage);
-      homeView.createScene(homeModel.getDisplaySize());
+      homeView.createScene(homeModel);
     });
 
     assertNotNull(stage.getScene());
@@ -63,7 +63,7 @@ public class HomeViewTest extends ApplicationTest {
 
     interact(() -> {
       HomeView homeView = new HomeView(listener, stage);
-      homeView.createScene(homeModel.getDisplaySize());
+      homeView.createScene(homeModel);
     });
 
     VBox root = (VBox) stage.getScene().getRoot();
