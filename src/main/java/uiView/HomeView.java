@@ -26,19 +26,20 @@ public class HomeView {
     Label title = createTitle(homeModel.getTitle());
     Scene scene = new Scene(root, homeModel.getDisplaySize().getX(), homeModel.getDisplaySize().getY());
 
-    Button signalButton = createButton(homeModel.getSignalButtonText());
-    Button imageButton = createButton(homeModel.getImageButtonText());
-    Button settingButton = createButton(homeModel.getSettingButtonText());
+    Button signalButton = createButton(homeModel.getSignalButtonData().text(), homeModel.getSignalButtonData().id());
+    Button imageButton = createButton(homeModel.getImageButtonData().text(), homeModel.getImageButtonData().id());
+    Button settingButton = createButton(homeModel.getSettingButtonData().text(), homeModel.getSettingButtonData().id());
 
     root.getChildren().addAll(title, signalButton, imageButton, settingButton);
     aStage.setScene(scene);
     aStage.show(); 
   }
 
-  public Button createButton(String text) {
+  public Button createButton(String text, String id) {
     System.out.println("HomeView: createButton");
 
     Button button = new Button(text);
+    button.setId(id);
     button.setOnAction(event -> uiListener.actionPerformed(event));
 
     return button;
