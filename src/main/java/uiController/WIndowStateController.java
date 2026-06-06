@@ -16,8 +16,10 @@ public class WIndowStateController implements ActionListener {
   public WIndowStateController(Stage aStage) {
     this.aStage = aStage;
 
-    this.aWindowState = new HomeConstroller();
     this.settingController = new SettingController();
+    this.aWindowState = new HomeConstroller(aStage, this, settingController);
+
+    aWindowState.initState();
   }
 
   public void changeWindowState(IWindowState nextWindowState) {
