@@ -1,38 +1,39 @@
 package uiController;
 
 import javafx.stage.Stage;
-import listener.IWindowState;
 import listener.ActionListener;
+import listener.IWindowState;
 import javafx.event.ActionEvent;
+import app.BoolEx;
 
 
-public class WIndowStateController implements ActionListener {
 
-  private Stage aStage;
+public class WindowStateController implements ActionListener {
+
   private IWindowState aWindowState;
-  private IWindowState nextWindowState;
   private SettingController settingController;
 
-  public WIndowStateController(Stage aStage) {
-    this.aStage = aStage;
+  public WindowStateController(Stage aStage) {
 
     this.settingController = new SettingController();
-    this.aWindowState = new HomeConstroller(aStage, this, settingController);
+    this.aWindowState = new HomeConstroller(this, settingController, aStage);
 
     aWindowState.initState();
   }
 
   public void changeWindowState(IWindowState nextWindowState) {
-    if (aWindowState != null) {
-      aWindowState.endState();
-    }
-    this.nextWindowState = nextWindowState;
+
+    BoolEx.ifTrueElse(this.aWindowState != null,
+       () -> this.aWindowState.endState()
+      );
+
     this.aWindowState = nextWindowState;
     aWindowState.initState();
   }
 
   @Override
   public void actionPerformed(ActionEvent event) {
+    
     
   }
 }

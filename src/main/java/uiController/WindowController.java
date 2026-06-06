@@ -8,12 +8,10 @@ import uiController.SettingController;
 
 public abstract class WindowController extends UIController implements IWindowState, ActionListener {
 
-  protected Stage stage;
   protected ActionListener actionListener;
   protected SettingController settingController;
 
-  public WindowController(Stage stage, ActionListener actionListener, SettingController settingController) {
-    this.stage = stage;
+  public WindowController(ActionListener actionListener, SettingController settingController) {
     this.actionListener = actionListener;
     this.settingController = settingController;
   }

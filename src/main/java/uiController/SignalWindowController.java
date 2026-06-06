@@ -6,8 +6,8 @@ import listener.ActionListener;
 
 public class SignalWindowController extends WindowController{
 
-    public SignalWindowController(Stage stage, ActionListener actionListener, SettingController settingController) {
-        super(stage, actionListener, settingController);
+    public SignalWindowController(ActionListener actionListener, SettingController settingController) {
+        super(actionListener, settingController);
     }
 
 

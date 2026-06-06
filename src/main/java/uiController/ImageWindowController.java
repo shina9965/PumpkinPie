@@ -6,8 +6,8 @@ import listener.ActionListener;
 public class ImageWindowController extends WindowController{
 
 
-  public ImageWindowController(Stage stage, ActionListener actionListener, SettingController settingController) {
-    super(stage, actionListener, settingController);
+  public ImageWindowController(ActionListener actionListener, SettingController settingController) {
+    super(actionListener, settingController);
   }
 
 

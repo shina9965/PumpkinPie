@@ -12,10 +12,10 @@ public class HomeConstroller extends WindowController{
   private HomeView homeView;
   private HomeModel homeModel;
 
-  HomeConstroller(Stage stage, ActionListener actionListener, SettingController settingController) {
-    super(stage, actionListener, settingController);
+  HomeConstroller(ActionListener actionListener, SettingController settingController, Stage stage) {
+    super(actionListener, settingController);
 
-    this.homeView = new HomeView(this);
+    this.homeView = new HomeView(this, stage);
     this.homeModel = new HomeModel();
   }
 
@@ -30,6 +30,8 @@ public class HomeConstroller extends WindowController{
 
   public void actionPerformed(javafx.event.ActionEvent event) {
     System.out.println("HomeConstroller: actionPerformed");
+
+    
   }
 
   public void onReturn() {

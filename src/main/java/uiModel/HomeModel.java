@@ -7,10 +7,10 @@ public class HomeModel {
   private Point2D displaySize;
 
   public HomeModel() {
-      this.displaySize = new Point2D(800, 600);
+    this.displaySize = new Point2D(800, 600);
   }
 
   public Point2D getDisplaySize() {
-      return displaySize;
+    return displaySize;
   }
 }
