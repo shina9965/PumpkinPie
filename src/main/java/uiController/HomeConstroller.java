@@ -11,4 +11,8 @@ public class HomeConstroller extends WindowController{
   public void endState() {
     System.out.println("HomeConstroller: endState");
   }
+
+  public void actionPerformed(javafx.event.ActionEvent event) {
+    System.out.println("HomeConstroller: actionPerformed");
+  }
 }
