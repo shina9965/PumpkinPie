@@ -3,8 +3,6 @@ package uiController;
 import listener.IWindowState;
 import listener.ActionListener;
 import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import uiController.SettingController;
 
 public abstract class WindowController extends UIController implements IWindowState, ActionListener {
 
