@@ -18,10 +18,10 @@ public class HomeController extends WindowController{
 
   private SettingController settingController;
 
-  /** HomeCOntroller
-   * @param stateChangeListener The listener to handle state changes.
-   * @param settingController The controller for settings.
-   * @param stage The JavaFX stage to display the view.
+  /** HomeControllerのコンストラクタ
+   * @param stateChangeListener State変化のためのリスナー。中身はWindowStateControllerが想定される。
+   * @param settingController 設定画面のコントローラー。HomeControllerから設定画面を開くために必要。
+   * @param stage JavaFXのStage。HomeViewを作成するために必要。
    */
   HomeController(StateChangeListener stateChangeListener, SettingController settingController, Stage stage) {
     super(stateChangeListener, settingController);
@@ -32,21 +32,30 @@ public class HomeController extends WindowController{
     this.settingController = settingController;
   }
 
-
+  /**
+   * HomeControllerの状態を初期化するメソッド。WindowStateControllerから呼び出されることを想定している。HomeViewを作成するためにHomeModelを渡す。
+   */
   public void initState() {
 
-    System.out.println("HomeConstroller: initState");
+    System.out.println("HomeController: initState");
 
     homeView.createScene(homeModel);
   }
 
+  /**
+   * HomeControllerの状態を終了するメソッド。WindowStateControllerから呼び出されることを想定している。
+   */
   public void endState() {
-    System.out.println("HomeConstroller: endState");
+    System.out.println("HomeController: endState");
   }
 
+  /**
+   * ボタンがクリックされた際の処理を行うメソッド。WindowStateControllerから呼び出されることを想定している。
+   * @param event イベントオブジェクト
+   */
   @Override
   public void actionPerformed(ActionEvent event) {
-    System.out.println("HomeConstroller: actionPerformed");
+    System.out.println("HomeController: actionPerformed");
 
     BoolEx.ifTrueElse(event.getSource() instanceof Button,
       () -> {
@@ -55,13 +64,13 @@ public class HomeController extends WindowController{
 
         BoolEx.ifTrueElse(this.homeModel.getSignalButtonData().id().equals(buttonId),
           () -> {stateChangeListener.changeWindowState(new SignalWindowController(stateChangeListener, settingController));
-            System.out.println("HomeConstroller: Signal Button Clicked");
+            System.out.println("HomeController: Signal Button Clicked");
           }
         );
 
         BoolEx.ifTrueElse(this.homeModel.getImageButtonData().id().equals(buttonId),
           () -> {stateChangeListener.changeWindowState(new ImageWindowController(stateChangeListener, settingController));
-            System.out.println("HomeConstroller: Image Button Clicked");
+            System.out.println("HomeController: Image Button Clicked");
           }
         );
       },
@@ -69,12 +78,18 @@ public class HomeController extends WindowController{
     );
   }
 
+  /**
+   * 戻るボタンがクリックされた際の処理を行うメソッド。たぶん使わない
+   * */
   public void onReturn() {
-    System.out.println("HomeConstroller: onReturn");
+    System.out.println("HomeController: onReturn");
   }
 
+  /**
+   * 設定ボタンがクリックされた際の処理を行うメソッド。
+   */
   public void onSetting() {
-    System.out.println("HomeConstroller: onSetting");
+    System.out.println("HomeController: onSetting");
     
   }
 }

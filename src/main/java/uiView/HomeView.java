@@ -19,6 +19,10 @@ public class HomeView {
     this.aStage = aStage;
   }
 
+  /**
+   * HomeViewのシーンを作成するメソッド。HomeControllerから呼び出されることを想定している。
+   * @param homeModel
+   */
   public void createScene(HomeModel homeModel) {
     System.out.println("HomeView: createScene");
 
@@ -35,6 +39,12 @@ public class HomeView {
     aStage.show(); 
   }
 
+  /**
+   * ボタンを作成するメソッド。HomeViewのcreateSceneから呼び出されることを想定している。
+   * @param text ボタンに表示するテキスト
+   * @param id ボタンのID
+   * @return 作成されたボタン
+   */
   public Button createButton(String text, String id) {
     System.out.println("HomeView: createButton");
 
@@ -45,6 +55,11 @@ public class HomeView {
     return button;
   }
 
+  /**
+   * タイトルラベルを作成するメソッド。HomeViewのcreateSceneから呼び出されることを想定している。
+   * @param text タイトルに表示するテキスト
+   * @return 作成されたタイトルラベル
+   */
   public Label createTitle(String text) {
     System.out.println("HomeView: createTitle");
 

@@ -21,6 +21,10 @@ public class WindowStateController implements StateChangeListener{
     aWindowState.initState();
   }
 
+  /**
+   * WindowStateControllerの状態を変更するメソッド。Obserberを用いてuiControllerから呼び出されることを想定している。
+   * @param nextWindowState 次の状態
+   */
   @Override
   public void changeWindowState(IWindowState nextWindowState) {
 
