@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import listener.ActionListener;
@@ -39,15 +40,18 @@ public class HomeViewTest extends ApplicationTest {
     assertEquals(homeModel.getDisplaySize().getX(), stage.getScene().getWidth());
     assertEquals(homeModel.getDisplaySize().getY(), stage.getScene().getHeight());
 
-    VBox root = (VBox) stage.getScene().getRoot();
-    assertEquals(4, root.getChildren().size());
+    BorderPane root = (BorderPane) stage.getScene().getRoot();
 
-    Label title = (Label) root.getChildren().get(0);
-    Button signalButton = (Button) root.getChildren().get(1);
-    Button imageButton = (Button) root.getChildren().get(2);
-    Button settingButton = (Button) root.getChildren().get(3);
+    Label title = (Label) root.getCenter();
+    HBox buttonBox = (HBox) root.getBottom();
 
     assertEquals("Pumpkin Pie", title.getText());
+    assertEquals(3, buttonBox.getChildren().size());
+
+    Button signalButton = (Button) buttonBox.getChildren().get(0);
+    Button imageButton = (Button) buttonBox.getChildren().get(1);
+    Button settingButton = (Button) buttonBox.getChildren().get(2);
+
     assertEquals("信号処理", signalButton.getText());
     assertEquals("画像処理", imageButton.getText());
     assertEquals("設定", settingButton.getText());
@@ -66,11 +70,12 @@ public class HomeViewTest extends ApplicationTest {
       homeView.createScene(homeModel);
     });
 
-    VBox root = (VBox) stage.getScene().getRoot();
+    BorderPane root = (BorderPane) stage.getScene().getRoot();
+    HBox buttonBox = (HBox) root.getBottom();
 
-    Button signalButton = (Button) root.getChildren().get(1);
-    Button imageButton = (Button) root.getChildren().get(2);
-    Button settingButton = (Button) root.getChildren().get(3);
+    Button signalButton = (Button) buttonBox.getChildren().get(0);
+    Button imageButton = (Button) buttonBox.getChildren().get(1);
+    Button settingButton = (Button) buttonBox.getChildren().get(2);
 
     clickOn(signalButton);
     clickOn(imageButton);
