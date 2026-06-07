@@ -16,7 +16,7 @@ public class WindowStateController implements StateChangeListener{
   public WindowStateController(Stage aStage) {
 
     this.settingController = new SettingController();
-    this.aWindowState = new HomeConstroller(this, settingController, aStage);
+    this.aWindowState = new HomeController(this, settingController, aStage);
 
     aWindowState.initState();
   }
