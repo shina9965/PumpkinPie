@@ -2,10 +2,14 @@ package app;
 
 public class Main {
 
+
+	/**
+	 * アプリケーションのエントリーポイント
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
-
-		BoolEx.ifTrueElse(true, () -> System.out.println("条件はtrueです"), () -> System.out.println("条件はfalseです"));
+		PumpkinPieApplication.main(args);
 	}
 
 }

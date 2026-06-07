@@ -59,7 +59,7 @@ public class BoolEx {
    * @param list
    * @param action
    */
-  public static <T> void forTrue(List<T> list, Consumer<T> action) {
+  public static <T> void forEach(List<T> list, Consumer<T> action) {
     for (T item : list) {
       action.accept(item);
     }
