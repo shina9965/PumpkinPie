@@ -1,9 +1,13 @@
 package uiView;
 
 import listener.ActionListener;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import uiModel.HomeModel;
@@ -24,20 +28,37 @@ public class HomeView {
    * @param homeModel
    */
   public void createScene(HomeModel homeModel) {
-    System.out.println("HomeView: createScene");
+  System.out.println("HomeView: createScene");
 
-    VBox root = new VBox(homeModel.getSpacing());
-    Label title = createTitle(homeModel.getTitle());
-    Scene scene = new Scene(root, homeModel.getDisplaySize().getX(), homeModel.getDisplaySize().getY());
+  
 
-    Button signalButton = createButton(homeModel.getSignalButtonData().text(), homeModel.getSignalButtonData().id());
-    Button imageButton = createButton(homeModel.getImageButtonData().text(), homeModel.getImageButtonData().id());
-    Button settingButton = createButton(homeModel.getSettingButtonData().text(), homeModel.getSettingButtonData().id());
+  Label title = createTitle(homeModel.getTitle());
 
-    root.getChildren().addAll(title, signalButton, imageButton, settingButton);
-    aStage.setScene(scene);
-    aStage.show(); 
-  }
+  Button signalButton = createButton(homeModel.getSignalButtonData().text(), homeModel.getSignalButtonData().id());
+  Button imageButton = createButton(homeModel.getImageButtonData().text(), homeModel.getImageButtonData().id());
+  Button settingButton = createButton(homeModel.getSettingButtonData().text(), homeModel.getSettingButtonData().id());
+
+  BorderPane root = new BorderPane();
+
+  HBox buttonBox = new HBox(20);
+  buttonBox.setAlignment(Pos.CENTER_LEFT);
+  buttonBox.setPadding(new Insets(20));
+  buttonBox.getChildren().addAll(signalButton, imageButton, settingButton);
+
+  root.setCenter(title);
+  root.setBottom(buttonBox);
+
+  BorderPane.setAlignment(buttonBox, Pos.BOTTOM_LEFT);
+
+  Scene scene = new Scene(
+    root,
+    homeModel.getDisplaySize().getX(),
+    homeModel.getDisplaySize().getY()
+  );
+
+  aStage.setScene(scene);
+  aStage.show();
+}
 
   /**
    * ボタンを作成するメソッド。HomeViewのcreateSceneから呼び出されることを想定している。
