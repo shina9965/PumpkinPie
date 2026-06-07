@@ -31,40 +31,27 @@ public abstract class WaveletTransformation {
  
     /**
      * ウェーブレット逆変換を実行する
-     * ウェーブレット係数から元信号を再帰的に復元する
+     * ウェーブレット係数から元信号を復元する
      * @param coefficients ウェーブレット係数配列
      * @return 復元された信号
      */
     protected double[] reconstruct(double[] coefficients) {
-        double[][] resultHolder = {null};
- 
-        BoolEx.ifTrueElse(
-            coefficients.length <= 1,  //長さ1なら変換しない(いるか不明)
-            () -> resultHolder[0] = coefficients,
-            () -> {
-                int      halfLen = coefficients.length / 2;
-                double[] low     = new double[halfLen];
-                double[] high    = new double[halfLen];
- 
-                System.arraycopy(coefficients, 0,       low,  0, halfLen);
-                System.arraycopy(coefficients, halfLen,  high, 0, halfLen);
- 
-                double[] reconstructedLow = reconstruct(low); //複数回ウェーブレット逆変換しようとしてる?
- 
-                double[] restored = new double[reconstructedLow.length + high.length];
-                int[]    idx      = {0};
- 
-                BoolEx.forTrue(0, reconstructedLow.length, () -> {
-                    restored[idx[0] * 2]     = restoreLeft (reconstructedLow[idx[0]], high[idx[0]]);
-                    restored[idx[0] * 2 + 1] = restoreRight(reconstructedLow[idx[0]], high[idx[0]]);
-                    idx[0]++;
-                });
- 
-                resultHolder[0] = restored;
-            }
-        );
- 
-        return resultHolder[0];
+        int      halfLen  = coefficients.length / 2;
+        double[] low      = new double[halfLen];
+        double[] high     = new double[halfLen];
+        double[] restored = new double[coefficients.length];
+        int[]    idx      = {0};
+
+        System.arraycopy(coefficients, 0,      low,  0, halfLen);
+        System.arraycopy(coefficients, halfLen, high, 0, halfLen);
+
+        BoolEx.forTrue(0, halfLen, () -> {
+            restored[idx[0] * 2]     = restoreLeft (low[idx[0]], high[idx[0]]);
+            restored[idx[0] * 2 + 1] = restoreRight(low[idx[0]], high[idx[0]]);
+            idx[0]++;
+        });
+
+        return restored;
     }
  
     /**
