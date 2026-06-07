@@ -1,13 +1,12 @@
 package uiController;
 
 import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import listener.ActionListener;
+import listener.StateChangeListener;
 
 public class SignalWindowController extends WindowController{
 
-    public SignalWindowController(ActionListener actionListener, SettingController settingController) {
-        super(actionListener, settingController);
+    public SignalWindowController(StateChangeListener stateChangeListener, SettingController settingController) {
+      super(stateChangeListener, settingController);
     }
 
 

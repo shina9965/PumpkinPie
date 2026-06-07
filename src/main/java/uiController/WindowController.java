@@ -1,16 +1,18 @@
 package uiController;
 
 import listener.IWindowState;
+import listener.StateChangeListener;
 import listener.ActionListener;
 import javafx.event.ActionEvent;
 
+
 public abstract class WindowController extends UIController implements IWindowState, ActionListener {
 
-  protected ActionListener actionListener;
+  protected StateChangeListener stateChangeListener;
   protected SettingController settingController;
 
-  public WindowController(ActionListener actionListener, SettingController settingController) {
-    this.actionListener = actionListener;
+  public WindowController(StateChangeListener stateChangeListener, SettingController settingController) {
+    this.stateChangeListener = stateChangeListener;
     this.settingController = settingController;
   }
 

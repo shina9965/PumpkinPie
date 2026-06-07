@@ -17,8 +17,6 @@ public class HomeModel {
 
   public HomeModel() {
     this.displaySize = new Point2D(800, 600);
-
-
   }
 
   public Point2D getDisplaySize() {

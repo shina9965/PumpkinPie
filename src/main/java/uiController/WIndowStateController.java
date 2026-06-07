@@ -1,14 +1,14 @@
 package uiController;
 
 import javafx.stage.Stage;
-import listener.ActionListener;
+import listener.StateChangeListener;
 import listener.IWindowState;
-import javafx.event.ActionEvent;
 import app.BoolEx;
 
 
 
-public class WindowStateController implements ActionListener {
+
+public class WindowStateController implements StateChangeListener{
 
   private IWindowState aWindowState;
   private SettingController settingController;
@@ -21,6 +21,7 @@ public class WindowStateController implements ActionListener {
     aWindowState.initState();
   }
 
+  @Override
   public void changeWindowState(IWindowState nextWindowState) {
 
     BoolEx.ifTrueElse(this.aWindowState != null,
@@ -29,11 +30,5 @@ public class WindowStateController implements ActionListener {
 
     this.aWindowState = nextWindowState;
     aWindowState.initState();
-  }
-
-  @Override
-  public void actionPerformed(ActionEvent event) {
-    
-    
   }
 }

@@ -1,13 +1,12 @@
 package uiController;
 
-import javafx.stage.Stage;
-import listener.ActionListener;
+import listener.StateChangeListener;
 
 public class ImageWindowController extends WindowController{
 
 
-  public ImageWindowController(ActionListener actionListener, SettingController settingController) {
-    super(actionListener, settingController);
+  public ImageWindowController(StateChangeListener stateChangeListener, SettingController settingController) {
+    super(stateChangeListener, settingController);
   }
 
 
@@ -19,6 +18,7 @@ public class ImageWindowController extends WindowController{
     System.out.println("ImageWindowController: endState");
   }
 
+  @Override
   public void actionPerformed(javafx.event.ActionEvent event) {
     System.out.println("ImageWindowController: actionPerformed");
   }
