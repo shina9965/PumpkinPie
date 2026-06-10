@@ -1,13 +1,14 @@
 package transformation;
 
+import waveletModel.WaveletModel;
 import app.BoolEx;
 
-public abstract class WaveletTransformation {
+public abstract class WaveletTransformation<T extends WaveletModel> {
     // ウェーブレット変換を開始する抽象メソッド
-    public abstract void startWaveletTransformation();
+    public abstract T startWaveletTransformation();
  
     //ウェーブレット逆変換を開始する抽象メソッド
-    public abstract void startInverseWaveletTransformation();
+    public abstract T startInverseWaveletTransformation();
  
     // ウェーブレットデータを更新する抽象メソッド
     // @param value 新しいデータ

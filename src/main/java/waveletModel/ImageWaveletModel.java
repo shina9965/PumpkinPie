@@ -1,5 +1,5 @@
 package waveletModel;
 
-public class ImageWaveletModel {
+public class ImageWaveletModel extends WaveletModel {
 
 }
