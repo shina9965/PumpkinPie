@@ -1,95 +1,120 @@
 package uiController;
 
+import app.BoolEx;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import listener.StateChangeListener;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-
-import app.BoolEx;
-
-import uiView.HomeView;
 import uiModel.HomeModel;
+import uiView.HomeView;
 
+public class HomeController extends WindowController {
 
-public class HomeController extends WindowController{
+    private ActionEvent latestActionEvent;
+    private HomeView homeView;
+    private HomeModel homeModel;
+    private SettingController settingController;
 
-  private HomeView homeView;
-  private HomeModel homeModel;
+    /**
+     * HomeControllerのコンストラクタ
+     *
+     * @param stateChangeListener State変化のためのリスナー
+     * @param settingController 設定画面のコントローラー
+     * @param stage JavaFXのStage
+     */
+    HomeController(StateChangeListener stateChangeListener, SettingController settingController, Stage stage) {
+        super(stateChangeListener, settingController);
 
-  private SettingController settingController;
+        this.homeView = new HomeView(this, stage);
+        this.homeModel = new HomeModel();
+        this.settingController = settingController;
+    }
 
-  /** HomeControllerのコンストラクタ
-   * @param stateChangeListener State変化のためのリスナー。中身はWindowStateControllerが想定される。
-   * @param settingController 設定画面のコントローラー。HomeControllerから設定画面を開くために必要。
-   * @param stage JavaFXのStage。HomeViewを作成するために必要。
-   */
-  HomeController(StateChangeListener stateChangeListener, SettingController settingController, Stage stage) {
-    super(stateChangeListener, settingController);
+    /**
+     * HomeControllerの状態を初期化するメソッド。
+     */
+    @Override
+    public void initState() {
+        System.out.println("HomeController: initState");
+        homeView.createScene(homeModel);
+    }
 
-    this.homeView = new HomeView(this, stage);
-    this.homeModel = new HomeModel();
+    /**
+     * HomeControllerの状態を終了するメソッド。
+     */
+    @Override
+    public void endState() {
+        System.out.println("HomeController: endState");
+    }
 
-    this.settingController = settingController;
-  }
+    /**
+     * ボタンがクリックされた際の処理を行うメソッド。
+     *
+     * @param event イベントオブジェクト
+     */
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        System.out.println("HomeController: actionPerformed");
 
-  /**
-   * HomeControllerの状態を初期化するメソッド。WindowStateControllerから呼び出されることを想定している。HomeViewを作成するためにHomeModelを渡す。
-   */
-  public void initState() {
+        this.latestActionEvent = event;
 
-    System.out.println("HomeController: initState");
+        Object source = event.getSource();
 
-    homeView.createScene(homeModel);
-  }
+        BoolEx.ifTrueElse(
+                source instanceof Button,
+                () -> {
+                    Button button = (Button) source;
+                    String buttonText = button.getText();
 
-  /**
-   * HomeControllerの状態を終了するメソッド。WindowStateControllerから呼び出されることを想定している。
-   */
-  public void endState() {
-    System.out.println("HomeController: endState");
-  }
+                    BoolEx.ifTrueElse(
+                            "設定".equals(buttonText),
+                            () -> onSetting()
+                    );
 
-  /**
-   * ボタンがクリックされた際の処理を行うメソッド。WindowStateControllerから呼び出されることを想定している。
-   * @param event イベントオブジェクト
-   */
-  @Override
-  public void actionPerformed(ActionEvent event) {
-    System.out.println("HomeController: actionPerformed");
+                    BoolEx.ifTrueElse(
+                            "信号処理".equals(buttonText),
+                            () -> System.out.println("HomeController: signal button clicked")
+                    );
 
-    BoolEx.ifTrueElse(event.getSource() instanceof Button,
-      () -> {
-        Button button = (Button) event.getSource();
-        String buttonId = button.getId();
-
-        BoolEx.ifTrueElse(this.homeModel.getSignalButtonData().id().equals(buttonId),
-          () -> {stateChangeListener.changeWindowState(new SignalWindowController(stateChangeListener, settingController));
-            System.out.println("HomeController: Signal Button Clicked");
-          }
+                    BoolEx.ifTrueElse(
+                            "画像処理".equals(buttonText),
+                            () -> System.out.println("HomeController: image button clicked")
+                    );
+                }
         );
+    }
 
-        BoolEx.ifTrueElse(this.homeModel.getImageButtonData().id().equals(buttonId),
-          () -> {stateChangeListener.changeWindowState(new ImageWindowController(stateChangeListener, settingController));
-            System.out.println("HomeController: Image Button Clicked");
-          }
+    /**
+     * 戻るボタンがクリックされた際の処理を行うメソッド。
+     */
+    @Override
+    public void onReturn() {
+        System.out.println("HomeController: onReturn");
+    }
+
+    /**
+     * 設定ボタンがクリックされた際の処理を行うメソッド。
+     */
+    @Override
+    public void onSetting() {
+        System.out.println("HomeController: onSetting");
+
+        BoolEx.ifTrueElse(
+                latestActionEvent != null,
+                () -> {
+                    Scene scene = new Scene(
+                            settingController.getView().getRoot(),
+                            900,
+                            500
+                    );
+
+                    Stage stage = (Stage) ((Node) latestActionEvent.getSource()).getScene().getWindow();
+                    stage.setTitle("設定画面");
+                    stage.setScene(scene);
+                    stage.show();
+                }
         );
-      },
-      () -> System.out.println("Event source is not a Button")
-    );
-  }
-
-  /**
-   * 戻るボタンがクリックされた際の処理を行うメソッド。たぶん使わない
-   * */
-  public void onReturn() {
-    System.out.println("HomeController: onReturn");
-  }
-
-  /**
-   * 設定ボタンがクリックされた際の処理を行うメソッド。
-   */
-  public void onSetting() {
-    System.out.println("HomeController: onSetting");
-    
-  }
+    }
 }
