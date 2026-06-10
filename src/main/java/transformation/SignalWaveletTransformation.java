@@ -8,7 +8,7 @@ import waveletModel.SignalWaveletModel;
  * WaveletTransformationを継承し、SignalWaveletModelを用いて
  * 信号のウェーブレット変換・逆変換を実現する
  */
-public class SignalWaveletTransformation extends WaveletTransformation {
+public class SignalWaveletTransformation extends WaveletTransformation<SignalWaveletModel> {
  
     /** Signal用Model：元信号やウェーブレット係数へのアクセスに使用 */
     private final SignalWaveletModel signalWaveletModel;
@@ -29,8 +29,8 @@ public class SignalWaveletTransformation extends WaveletTransformation {
      * Modelから元信号を取得し、padding後にdecomposeを実行して変換係数をModelへ保存する
      */
     @Override
-    public void startWaveletTransformation() {
-        startSignalWaveletTransformation();
+    public SignalWaveletModel startWaveletTransformation() {
+        return startSignalWaveletTransformation();
     }
  
     /**
@@ -38,8 +38,8 @@ public class SignalWaveletTransformation extends WaveletTransformation {
      * Modelから変換係数を取得し、reconstructを実行してpaddingを除去した後、復元信号をModelへ保存する
      */
     @Override
-    public void startInverseWaveletTransformation() {
-        startInverseSignalWaveletTransformation();
+    public SignalWaveletModel startInverseWaveletTransformation() {
+        return startInverseSignalWaveletTransformation();
     }
  
     /**

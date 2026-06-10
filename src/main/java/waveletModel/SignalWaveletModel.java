@@ -8,7 +8,7 @@ import fileManager.SignalFileManager;
  * 信号ウェーブレット変換に使用するデータモデル
  * 元信号・変換係数・復元信号を保持し、ファイルI/Oも担う
  */
-public class SignalWaveletModel {
+public class SignalWaveletModel extends WaveletModel {
  
     /** 元信号データ */
     private double[] originalSignal;
