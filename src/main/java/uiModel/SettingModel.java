@@ -1,6 +1,8 @@
 package uiModel;
 
 import app.BoolEx;
+import javafx.scene.control.Button;
+import uiController.ButtonRecord;
 
 /**
  * 設定画面で扱うデータを管理するクラス。
@@ -16,6 +18,12 @@ public class SettingModel {
 
     /** 現在、設定画面上で編集中の採用率。 */
     private int adoptionRate;
+
+    private final ButtonRecord adoptButtonData = new ButtonRecord("適用","ADOPT");
+    private final ButtonRecord resetButtonData = new ButtonRecord("リセット","RESET");
+    private final ButtonRecord finishButtonData = new ButtonRecord("アプリを終了","FINISH");
+    private final ButtonRecord returnButtonData = new ButtonRecord("戻る","RETURN");
+    private final ButtonRecord creditButtonData = new ButtonRecord("クレジット","CREDIT");
 
     /**
      * コンストラクタ。
@@ -101,5 +109,25 @@ public class SettingModel {
      */
     public int getDefaultAdoptionRate() {
         return DEFAULT_ADOPTION_RATE;
+    }
+
+    public ButtonRecord getAdoptButton(){
+        return adoptButtonData;
+    }
+
+    public ButtonRecord getResetButton(){
+        return resetButtonData;
+    }
+
+    public ButtonRecord getFinishButton(){
+        return finishButtonData;
+    }
+
+    public ButtonRecord getReturnButton(){
+        return returnButtonData;
+    }
+
+    public ButtonRecord getCreditButton(){
+        return creditButtonData;
     }
 }

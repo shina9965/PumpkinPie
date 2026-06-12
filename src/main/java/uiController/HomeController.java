@@ -2,9 +2,7 @@ package uiController;
 
 import app.BoolEx;
 import javafx.event.ActionEvent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import listener.StateChangeListener;
 import uiModel.HomeModel;
@@ -115,24 +113,13 @@ public class HomeController extends WindowController {
    */
   @Override
   public void onSetting() {
-    System.out.println("HomeController: onSetting");
-
-    Stage settingStage = new Stage();
-
-    settingController.setPopupStage(settingStage);
-
-    Scene settingScene = new Scene(
-        settingController.getView().getRoot(),
-        homeModel.getDisplaySize().getX(),
-        homeModel.getDisplaySize().getY()
-    );
-
-    settingStage.setTitle(
-        homeModel.getTitle() + " - " + homeModel.getSettingButtonData().text()
-    );
-
-    settingStage.setScene(settingScene);
-    settingStage.initModality(Modality.APPLICATION_MODAL);
-    settingStage.show();
+    
+    BoolEx.ifTrueElse(!settingController.getIsOpened(),
+      () -> 
+        {
+          settingController.openSetting();
+          System.out.println("HomeController : openSetting");
+        }
+      );
   }
 }

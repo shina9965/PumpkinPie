@@ -2,20 +2,14 @@ package uiView;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import listener.ActionListener;
+import uiModel.SettingModel;
 
-/**
- * 設定画面の見た目を作るクラス。
- * UI部品の作成と配置を担当する。
- */
 public class SettingView {
 
     private Slider rateSlider;
@@ -30,24 +24,29 @@ public class SettingView {
     private ActionListener actionListener;
     private BorderPane root;
 
-    /**
-     * コンストラクタ。
-     *
-     * @param actionListener ボタンイベントを受け取るリスナー
-     */
+    private Stage settingStage;
+
     public SettingView(ActionListener actionListener) {
         this.actionListener = actionListener;
-
-        initializeComponents();
-        layoutComponents();
-        setButtonActions();
     }
 
     /**
-     * UI部品を初期化する。
+     * 初期化処理をまとめる
      */
-    private void initializeComponents() {
-        rateSlider = new Slider(0, 100, 10);
+    public void initialize(SettingModel model) {
+        initializeComponents(model);
+        layoutComponents();
+        setButtonActions();
+        updateView(model.getAdoptionRate());
+
+        settingStage = new Stage();
+        settingStage.setTitle("設定");
+        settingStage.initModality(Modality.APPLICATION_MODAL);
+        settingStage.setScene(new Scene(root, 900, 500));
+    }
+
+    public void initializeComponents(SettingModel model) {
+        rateSlider = new Slider(0, 100, model.getAdoptionRate());
         rateSlider.setShowTickLabels(true);
         rateSlider.setShowTickMarks(true);
         rateSlider.setMajorTickUnit(10);
@@ -56,14 +55,23 @@ public class SettingView {
         rateSlider.setSnapToTicks(true);
         rateSlider.setPrefWidth(450);
 
-        rateTextField = new TextField("10");
+        rateTextField = new TextField(String.valueOf(model.getAdoptionRate()));
         rateTextField.setPrefWidth(80);
 
-        applyButton = new Button("適用");
-        resetButton = new Button("リセット");
-        exitButton = new Button("アプリを終了");
-        backButton = new Button("戻る");
-        creditButton = new Button("クレジット");
+        applyButton = new Button(model.getAdoptButton().text());
+        applyButton.setId(model.getAdoptButton().id());
+
+        resetButton = new Button(model.getResetButton().text());
+        resetButton.setId(model.getResetButton().id());
+
+        exitButton = new Button(model.getFinishButton().text());
+        exitButton.setId(model.getFinishButton().id());
+
+        backButton = new Button(model.getReturnButton().text());
+        backButton.setId(model.getReturnButton().id());
+
+        creditButton = new Button(model.getCreditButton().text());
+        creditButton.setId(model.getCreditButton().id());
 
         applyButton.setPrefWidth(100);
         resetButton.setPrefWidth(100);
@@ -74,10 +82,7 @@ public class SettingView {
         exitButton.setPrefHeight(60);
     }
 
-    /**
-     * UI部品を配置する。
-     */
-    private void layoutComponents() {
+    public void layoutComponents() {
         root = new BorderPane();
         root.setPadding(new Insets(30));
 
@@ -89,8 +94,6 @@ public class SettingView {
         titleArea.setPadding(new Insets(0, 0, 30, 0));
 
         Label adoptionLabel = new Label("採用率");
-        adoptionLabel.setStyle("-fx-font-size: 18px;");
-
         Label percentLabel = new Label("%");
 
         HBox rateInputArea = new HBox(10, rateTextField, percentLabel);
@@ -125,56 +128,48 @@ public class SettingView {
         root.setCenter(mainArea);
     }
 
-    /**
-     * ボタンにイベントを設定する。
-     */
-    private void setButtonActions() {
+    public void setButtonActions() {
         applyButton.setOnAction(event -> actionListener.actionPerformed(event));
         resetButton.setOnAction(event -> actionListener.actionPerformed(event));
         exitButton.setOnAction(event -> actionListener.actionPerformed(event));
         backButton.setOnAction(event -> actionListener.actionPerformed(event));
         creditButton.setOnAction(event -> actionListener.actionPerformed(event));
+
+        rateSlider.valueProperty().addListener((obs, oldValue, newValue) -> {
+            rateTextField.setText(String.valueOf(newValue.intValue()));
+        });
     }
 
-    /**
-     * スライダーとテキストボックスを更新する。
-     *
-     * @param rate 採用率
-     */
     public void updateView(int rate) {
         rateSlider.setValue(rate);
         rateTextField.setText(String.valueOf(rate));
     }
 
-    public Parent getRoot() {
-        return root;
+    public int getRateValue() {
+        return Integer.parseInt(rateTextField.getText());
     }
 
-    public Slider getRateSlider() {
-        return rateSlider;
+    public void open() {
+        settingStage.show();
     }
 
-    public TextField getRateTextField() {
-        return rateTextField;
+    public void close() {
+        settingStage.close();
     }
 
-    public Button getApplyButton() {
-        return applyButton;
+    public void showCredit() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("クレジット");
+        alert.setHeaderText("クレジット");
+        alert.setContentText("PumpkinPie");
+        alert.showAndWait();
     }
 
-    public Button getResetButton() {
-        return resetButton;
-    }
-
-    public Button getExitButton() {
-        return exitButton;
-    }
-
-    public Button getBackButton() {
-        return backButton;
-    }
-
-    public Button getCreditButton() {
-        return creditButton;
-    }
+    public void showMessage(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+}
 }
