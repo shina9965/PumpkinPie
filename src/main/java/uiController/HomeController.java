@@ -96,6 +96,7 @@ public class HomeController extends WindowController {
 
     /**
      * 設定ボタンがクリックされた際の処理を行うメソッド。
+     * ホーム画面のSceneを保存し、設定画面の戻るボタンで戻れるようにする。
      */
     @Override
     public void onSetting() {
@@ -104,15 +105,24 @@ public class HomeController extends WindowController {
         BoolEx.ifTrueElse(
                 latestActionEvent != null,
                 () -> {
-                    Scene scene = new Scene(
+                    Stage stage = (Stage) ((Node) latestActionEvent.getSource()).getScene().getWindow();
+
+                    Scene homeScene = stage.getScene();
+
+                    this.settingController = new SettingController(
+                            stage,
+                            homeScene,
+                            "Pumpkin Pie"
+                    );
+
+                    Scene settingScene = new Scene(
                             settingController.getView().getRoot(),
                             900,
                             500
                     );
 
-                    Stage stage = (Stage) ((Node) latestActionEvent.getSource()).getScene().getWindow();
                     stage.setTitle("設定画面");
-                    stage.setScene(scene);
+                    stage.setScene(settingScene);
                     stage.show();
                 }
         );

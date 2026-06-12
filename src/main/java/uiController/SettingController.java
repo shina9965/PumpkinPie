@@ -2,11 +2,14 @@ package uiController;
 
 import java.util.Optional;
 
+import app.BoolEx;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import listener.ActionListener;
 import uiModel.SettingModel;
 import uiView.SettingView;
@@ -26,21 +29,45 @@ public class SettingController implements ActionListener {
     /** View更新中にイベントが連続発生するのを防ぐためのフラグ */
     private boolean updatingView;
 
+    /** 戻るボタンで戻るためのStage */
+    private Stage ownerStage;
+
+    /** 戻るボタンで表示し直すScene */
+    private Scene returnScene;
+
+    /** 戻ったときのウィンドウタイトル */
+    private String returnTitle;
+
     /**
-     * コンストラクタ。
-     * ModelとViewを作成し、入力イベントを設定する。
+     * 単体確認用コンストラクタ。
+     * Main.java から設定画面だけを起動するときに使う。
      */
     public SettingController() {
+        this(null, null, "Pumpkin Pie");
+    }
+
+    /**
+     * Home画面など、戻り先を指定して設定画面を作るコンストラクタ。
+     *
+     * @param ownerStage 表示に使うStage
+     * @param returnScene 戻る先のScene
+     * @param returnTitle 戻ったときのウィンドウタイトル
+     */
+    public SettingController(Stage ownerStage, Scene returnScene, String returnTitle) {
         this.model = new SettingModel();
         this.view = new SettingView(this);
         this.updatingView = false;
+
+        this.ownerStage = ownerStage;
+        this.returnScene = returnScene;
+        this.returnTitle = returnTitle;
 
         view.updateView(model.getAdoptionRate());
         setInputListeners();
     }
 
     /**
-     * MainなどからSettingViewを取得するためのメソッド。
+     * MainやHomeControllerなどからSettingViewを取得するためのメソッド。
      *
      * @return 設定画面のView
      */
@@ -53,12 +80,10 @@ public class SettingController implements ActionListener {
      */
     private void setInputListeners() {
         view.getRateSlider().valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (updatingView) {
-                return;
-            }
-
-            int intValue = newValue.intValue();
-            onSliderChanged(intValue);
+            BoolEx.ifTrueElse(
+                    !updatingView,
+                    () -> onSliderChanged(newValue.intValue())
+            );
         });
 
         TextField textField = view.getRateTextField();
@@ -66,13 +91,10 @@ public class SettingController implements ActionListener {
         textField.setOnAction(event -> onTextChanged(textField.getText()));
 
         textField.focusedProperty().addListener((observable, oldFocused, newFocused) -> {
-            if (updatingView) {
-                return;
-            }
-
-            if (!newFocused) {
-                onTextChanged(textField.getText());
-            }
+            BoolEx.ifTrueElse(
+                    !updatingView && !newFocused,
+                    () -> onTextChanged(textField.getText())
+            );
         });
     }
 
@@ -86,29 +108,30 @@ public class SettingController implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         Object source = event.getSource();
 
-        if (source == view.getApplyButton()) {
-            onApplyButtonClicked();
-            return;
-        }
+        BoolEx.ifTrueElse(
+                source == view.getApplyButton(),
+                () -> onApplyButtonClicked()
+        );
 
-        if (source == view.getResetButton()) {
-            onResetButtonClicked();
-            return;
-        }
+        BoolEx.ifTrueElse(
+                source == view.getResetButton(),
+                () -> onResetButtonClicked()
+        );
 
-        if (source == view.getExitButton()) {
-            onExitButtonClicked();
-            return;
-        }
+        BoolEx.ifTrueElse(
+                source == view.getExitButton(),
+                () -> onExitButtonClicked()
+        );
 
-        if (source == view.getBackButton()) {
-            onBackButtonClicked();
-            return;
-        }
+        BoolEx.ifTrueElse(
+                source == view.getBackButton(),
+                () -> onBackButtonClicked()
+        );
 
-        if (source == view.getCreditButton()) {
-            onCreditButtonClicked();
-        }
+        BoolEx.ifTrueElse(
+                source == view.getCreditButton(),
+                () -> onCreditButtonClicked()
+        );
     }
 
     /**
@@ -147,9 +170,12 @@ public class SettingController implements ActionListener {
 
     /**
      * 適用ボタンが押されたときの処理。
+     * 現在の採用率をシステム全体へ適用する。
      */
     public void onApplyButtonClicked() {
-        int currentRate = model.getAdoptionRate();
+        model.applyAdoptionRate();
+
+        int currentRate = model.getAppliedAdoptionRate();
 
         showInformationDialog(
                 "設定を適用しました",
@@ -181,19 +207,28 @@ public class SettingController implements ActionListener {
 
         Optional<ButtonType> result = alert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            Platform.exit();
-        }
+        BoolEx.ifTrueElse(
+                result.isPresent() && result.get() == ButtonType.OK,
+                () -> Platform.exit()
+        );
     }
 
     /**
      * 戻るボタンが押されたときの処理。
-     * Home画面との接続は未実装なので、今は仮処理にしている。
+     * 設定画面を開く前のホーム画面に戻る。
      */
     public void onBackButtonClicked() {
-        showInformationDialog(
-                "戻る",
-                "ホーム画面へ戻る処理は未実装です。"
+        BoolEx.ifTrueElse(
+                ownerStage != null && returnScene != null,
+                () -> {
+                    ownerStage.setTitle(returnTitle);
+                    ownerStage.setScene(returnScene);
+                    ownerStage.show();
+                },
+                () -> showInformationDialog(
+                        "戻る",
+                        "戻り先のホーム画面が設定されていません。"
+                )
         );
     }
 
@@ -214,9 +249,12 @@ public class SettingController implements ActionListener {
      * @return 採用率
      */
     private int parseAdoptionRate(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            throw new NumberFormatException("空文字です。");
-        }
+        BoolEx.ifTrueElse(
+                text == null || text.trim().isEmpty(),
+                () -> {
+                    throw new NumberFormatException("空文字です。");
+                }
+        );
 
         return Integer.parseInt(text.trim());
     }
