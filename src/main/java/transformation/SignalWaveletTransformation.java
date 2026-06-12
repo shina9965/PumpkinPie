@@ -56,6 +56,7 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
  
     /**
      * 信号のウェーブレット変換を実行し、変換後のModelを返す
+     * ・信号データの要素数が1以下なら例外を投げる
      * ・元信号をpaddingして偶数長にする
      * ・decomposeでウェーブレット係数を計算する
      * ・結果をModelへ保存する
