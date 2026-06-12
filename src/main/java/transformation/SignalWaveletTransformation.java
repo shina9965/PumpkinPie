@@ -64,6 +64,11 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
      */
     public SignalWaveletModel startSignalWaveletTransformation() {
         double[] original = signalWaveletModel.getOriginalSignal();
+        BoolEx.ifTrueElse(
+            original.length <= 1,
+            () -> { throw new IllegalArgumentException("信号データは2要素以上必要です: 要素数=" + original.length); },
+            () -> {}
+        );
         double[] padded   = padding(original);
         double[] coefficients = decompose(padded);
         signalWaveletModel.setTransformedSignal(coefficients);
