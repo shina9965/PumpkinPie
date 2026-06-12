@@ -4,6 +4,8 @@ import javafx.stage.Stage;
 import listener.StateChangeListener;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
 
 import app.BoolEx;
 
@@ -73,23 +75,39 @@ public class HomeController extends WindowController{
             System.out.println("HomeController: Image Button Clicked");
           }
         );
+
+        BoolEx.ifTrueElse(this.homeModel.getSettingButtonData().id().equals(buttonId),
+           () -> {
+            onSetting();
+            System.out.println("HomeController: Setting Button Clicked");
+           }
+          );
       },
       () -> System.out.println("Event source is not a Button")
     );
   }
 
   /**
-   * 戻るボタンがクリックされた際の処理を行うメソッド。たぶん使わない
-   * */
-  public void onReturn() {
-    System.out.println("HomeController: onReturn");
-  }
-
-  /**
    * 設定ボタンがクリックされた際の処理を行うメソッド。
+   * 設定画面をポップアップとして表示する。
    */
   public void onSetting() {
-    System.out.println("HomeController: onSetting");
-    
+      System.out.println("HomeController: onSetting");
+
+      Stage settingStage = new Stage();
+
+      settingController.setPopupStage(settingStage);
+
+      Scene settingScene = new Scene(
+              settingController.getView().getRoot(),
+              homeModel.getDisplaySize().getX(),
+              homeModel.getDisplaySize().getY()
+      );
+
+      settingStage.setTitle(homeModel.getTitle() + " - 設定");
+      settingStage.setScene(settingScene);
+
+      settingStage.initModality(Modality.APPLICATION_MODAL);
+
+      settingStage.show();
   }
-}
