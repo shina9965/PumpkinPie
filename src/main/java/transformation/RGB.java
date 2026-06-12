@@ -1,3 +1,4 @@
+package transformation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +7,10 @@ import org.opencv.core.Mat;
 
 public class RGB{
     //フィールド
-    private Mat image;        //入力された原画像
-    private Mat R;   //分解された画像の赤チャネルをリストに
-    private Mat G;   //分解された画像の緑チャネルをリストに
-    private Mat B;   //分解された画像の青チャネルをリストに
+    private Mat image;  //入力された原画像
+    private Mat R;      //分解された画像の赤チャネル画像
+    private Mat G;      //分解された画像の緑チャネル画像
+    private Mat B;      //分解された画像の青チャネル画像
 
     //コンストラクタ
     public RGB(Mat image){
@@ -28,13 +29,13 @@ public class RGB{
         this.R = channels.get(2);
          
     }                                        //imageを分解し、リストたちに値を代入
-    public ArrayList<Integer> getRList(){                               //RListを返す
+    public Mat getR(){                               //RListを返す
         return R;
     }
-    public ArrayList<Integer> getGList(){                               //GListを返す
+    public Mat getG(){                               //GListを返す
         return G;
     }
-    public ArrayList<Integer> getBList(){                               //BListを返す
+    public Mat getB(){                               //BListを返す
         return B;
     }
     public Mat createRedImage (Mat R){     //赤チャネルの写真作成
@@ -81,6 +82,21 @@ public class RGB{
     }
     //分解されたチャネルをまた合成する
     public Mat mergedImage (Mat R, Mat G, Mat B){
-        return null;
+        if (!R.size().equals(G.size()) || !R.size().equals(B.size())) {
+            throw new IllegalArgumentException("Channel sizes do not match");
+        }
+
+
+        List<Mat> channels = new ArrayList<>();
+        
+        channels.add(B);
+        channels.add(G);
+        channels.add(R);
+
+        Mat mergedImage = new Mat();
+
+        Core.merge(channels, mergedImage);
+
+        return mergedImage;
     }
 }
