@@ -100,4 +100,28 @@ class SignalWaveletTransformationTest {
 
     assertSame(model1, model2);
   }
+
+  @Test
+  void 入力が空の配列の場合例外を投げる() {
+    SignalWaveletTransformation transformation = new SignalWaveletTransformation();
+
+    transformation.changeWaveletData(new double[]{});
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> transformation.startWaveletTransformation()
+    );
+  }
+
+  @Test
+  void 入力が1要素の場合例外を投げる() {
+    SignalWaveletTransformation transformation = new SignalWaveletTransformation();
+
+    transformation.changeWaveletData(new double[]{1.0});
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> transformation.startWaveletTransformation()
+    );
+  }
 }
