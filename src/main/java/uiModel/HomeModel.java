@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import uiController.ButtonRecord;
 
 
+
 public class HomeModel {
 
   private final Point2D displaySize;
