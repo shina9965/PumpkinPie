@@ -1,0 +1,86 @@
+
+import java.util.ArrayList;
+import java.util.List;
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+
+public class RGB{
+    //フィールド
+    private Mat image;        //入力された原画像
+    private Mat R;   //分解された画像の赤チャネルをリストに
+    private Mat G;   //分解された画像の緑チャネルをリストに
+    private Mat B;   //分解された画像の青チャネルをリストに
+
+    //コンストラクタ
+    public RGB(Mat image){
+        this.image = image;
+        this.R = new Mat();
+        this.G = new Mat();
+        this.B = new Mat();
+    }
+
+    //メソッド
+    public void decomposeRGB(){
+        List<Mat> channels = new ArrayList<>();
+        Core.split(image,channels);
+        this.B = channels.get(0);
+        this.G = channels.get(1);
+        this.R = channels.get(2);
+         
+    }                                        //imageを分解し、リストたちに値を代入
+    public ArrayList<Integer> getRList(){                               //RListを返す
+        return R;
+    }
+    public ArrayList<Integer> getGList(){                               //GListを返す
+        return G;
+    }
+    public ArrayList<Integer> getBList(){                               //BListを返す
+        return B;
+    }
+    public Mat createRedImage (Mat R){     //赤チャネルの写真作成
+        Mat zero = Mat.zeros(R.size(),R.type());
+        List<Mat> channels = new ArrayList<>();
+
+        channels.add(zero);
+        channels.add(zero);
+        channels.add(R);
+        
+        Mat redImage = new Mat();
+
+        Core.merge(channels, redImage);
+
+        return redImage;
+    }
+    public Mat createGreenImage (Mat G){   //緑チャネルの写真作成
+        Mat zero = Mat.zeros(G.size(),G.type());
+        List<Mat> channels = new ArrayList<>();
+
+        channels.add(zero);
+        channels.add(G);
+        channels.add(zero);
+        
+        Mat greenImage = new Mat();
+
+        Core.merge(channels, greenImage);
+
+        return greenImage;
+    }
+    public Mat createBlueImage (Mat B){    //青チャネルの写真作成
+        Mat zero = Mat.zeros(B.size(),B.type());
+        List<Mat> channels = new ArrayList<>();
+
+        channels.add(B);
+        channels.add(zero);
+        channels.add(zero);
+        
+        Mat blueImage = new Mat();
+
+        Core.merge(channels, blueImage);
+
+        return blueImage;
+    }
+    //分解されたチャネルをまた合成する
+    public Mat mergedImage (Mat R, Mat G, Mat B){
+        return null;
+    }
+}
