@@ -38,6 +38,9 @@ public class SettingController implements ActionListener {
     /** 戻ったときのウィンドウタイトル */
     private String returnTitle;
 
+    /** 設定画面をポップアップ表示したときのStage */
+    private Stage popupStage;
+
     /**
      * 単体確認用コンストラクタ。
      * Main.java から設定画面だけを起動するときに使う。
@@ -61,6 +64,7 @@ public class SettingController implements ActionListener {
         this.ownerStage = ownerStage;
         this.returnScene = returnScene;
         this.returnTitle = returnTitle;
+        this.popupStage = null;
 
         view.updateView(model.getAdoptionRate());
         setInputListeners();
@@ -73,6 +77,15 @@ public class SettingController implements ActionListener {
      */
     public SettingView getView() {
         return view;
+    }
+
+    /**
+     * 設定画面をポップアップとして開いたときのStageを受け取る。
+     *
+     * @param popupStage 設定画面のポップアップStage
+     */
+    public void setPopupStage(Stage popupStage) {
+        this.popupStage = popupStage;
     }
 
     /**
@@ -215,19 +228,15 @@ public class SettingController implements ActionListener {
 
     /**
      * 戻るボタンが押されたときの処理。
-     * 設定画面を開く前のホーム画面に戻る。
+     * ポップアップ表示中なら設定画面を閉じる。
      */
     public void onBackButtonClicked() {
         BoolEx.ifTrueElse(
-                ownerStage != null && returnScene != null,
-                () -> {
-                    ownerStage.setTitle(returnTitle);
-                    ownerStage.setScene(returnScene);
-                    ownerStage.show();
-                },
+                popupStage != null,
+                () -> popupStage.close(),
                 () -> showInformationDialog(
                         "戻る",
-                        "戻り先のホーム画面が設定されていません。"
+                        "閉じる対象の設定画面が見つかりません。"
                 )
         );
     }
