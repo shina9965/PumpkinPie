@@ -1,11 +1,9 @@
 package waveletModel;
  
 import java.io.File;
-import java.io.IOException;
-
 import app.BoolEx;
 import fileManager.SignalFileManager;
-
+ 
 /**
  * 信号ウェーブレット変換に使用するデータモデル
  * 元信号・変換係数・復元信号を保持し、ファイルI/Oも担う
@@ -47,7 +45,7 @@ public class SignalWaveletModel extends WaveletModel {
      *
      * @param file 読み込むファイル
      */
-    public void loadSignal(File file) throws IOException {
+    public void loadSignal(File file) {
         this.originalSignal = signalFileManager.importFile(file);
         this.originalLength = originalSignal.length;
     }
@@ -58,15 +56,13 @@ public class SignalWaveletModel extends WaveletModel {
      *
      * @param file 保存先ファイル
      */
-    public void saveSignal(File file) throws IOException {
-        double[][] outputSignal = {reconstructedSignal};
-
+    public void saveSignal(File file) {
+        boolean hasReconstructed = reconstructedSignal != null && reconstructedSignal.length > 0;
         BoolEx.ifTrueElse(
-                reconstructedSignal == null || reconstructedSignal.length == 0,
-                () -> outputSignal[0] = transformedSignal
+            hasReconstructed,
+            () -> signalFileManager.exportFile(file, reconstructedSignal),
+            () -> signalFileManager.exportFile(file, transformedSignal)
         );
-
-        signalFileManager.exportFile(file, outputSignal[0]);
     }
  
     // ===== paddingユーティリティ =====
