@@ -1,7 +1,6 @@
 package uiModel;
 
 import app.BoolEx;
-import javafx.scene.control.Button;
 import uiController.ButtonRecord;
 
 /**
