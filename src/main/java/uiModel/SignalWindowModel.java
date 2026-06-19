@@ -143,9 +143,20 @@ public class SignalWindowModel {
 
   // 指定された係数の有効・無効を切り替える
   public void toggleCoefficient(int index) {
-    
-    // マウス入力担当が実装する。
+    BoolEx.ifTrueElse(
+        index >= 0 && index < editedWaveletCoefficient.length,
+        () -> {
+          selectedCoefficientIndex = index;
 
+          BoolEx.ifTrueElse(
+              editedWaveletCoefficient[index] == 0.0,
+              () -> editedWaveletCoefficient[index] = waveletCoefficient[index],
+              () -> editedWaveletCoefficient[index] = 0.0
+          );
+
+          updateInverseSignal();
+        }
+    );
   }
 
   // 編集後の係数を使って逆変換後信号を更新する

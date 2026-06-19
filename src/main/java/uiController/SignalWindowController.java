@@ -40,7 +40,7 @@ public class SignalWindowController extends WindowController {
 
     stage.setScene(signalWindowView.createScene(signalWindowModel));
     stage.show();
-
+  
     updateView();
   }
 
