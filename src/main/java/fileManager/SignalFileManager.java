@@ -13,6 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.io.UncheckedIOException;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+
 
 /**
  * 信号ファイルの入力を管理するクラス。
@@ -35,6 +40,62 @@ public class SignalFileManager {
         "txt",
         "csv"
     };
+  }
+
+  /**
+   * ファイル選択画面を表示し、選択されたファイルの絶対パスを返す。
+   *
+   * @return 選択されたファイルの絶対パス。
+   *         キャンセルされた場合はnull
+   */
+  public String chooseSignalFilePath() {
+    FileChooser fileChooser = new FileChooser();
+
+    fileChooser.setTitle("信号ファイルを選択");
+
+    fileChooser.getExtensionFilters().addAll(
+        new FileChooser.ExtensionFilter(
+            "対応する信号ファイル",
+            "*.bin",
+            "*.dat",
+            "*.raw",
+            "*.txt",
+            "*.csv"
+        ),
+        new FileChooser.ExtensionFilter(
+            "すべてのファイル",
+            "*.*"
+        )
+    );
+
+    File selectedFile = fileChooser.showOpenDialog(null);
+
+    return Optional.ofNullable(selectedFile)
+        .map(File::getAbsolutePath)
+        .orElse(null);
+  }
+
+  /**
+   * ファイル選択画面で選択した信号ファイルを読み込む。
+   *
+   * @return 読み込んだ信号データ
+   * @throws IOException 読み込みに失敗した場合
+   */
+  public double[] importSelectedFile() throws IOException {
+    String selectedPath = chooseSignalFilePath();
+
+    BoolEx.ifTrueElse(
+        selectedPath == null,
+        () -> {
+          throw new IllegalArgumentException(
+              "ファイルが選択されませんでした。"
+          );
+        }
+    );
+
+    File file = new File(selectedPath);
+
+    return importFile(file);
   }
 
   /**
@@ -71,11 +132,13 @@ public class SignalFileManager {
 
     String extension = getExtension(file);
 
-    return switch (extension) {
-      case "bin", "dat", "raw" -> readBinaryFile(file);
-      case "txt", "csv" -> readTextFile(file);
-      default -> throw new IllegalArgumentException("対応していない拡張子です: " + extension);
-    };
+    // bin・dat・rawならバイナリ、それ以外の対応形式はtxt・csvとして読み込む。
+    boolean isBinaryType =
+        List.of("bin", "dat", "raw").contains(extension);
+
+    return isBinaryType
+        ? readBinaryFile(file)
+        : readTextFile(file);
   }
 
   /**
@@ -261,22 +324,20 @@ public class SignalFileManager {
   }
 
   /**
-     * 入力されたファイルの拡張子をゲットする。
-     *
-     * @param file 対象ファイル
-     * @return 拡張子
-     */
-    private String getExtension(File file) {
-        String fileName = file == null ? "" : file.getName();
-        int dotIndex = fileName.lastIndexOf(".");
-        String[] extension = {""};
+   * 入力されたファイルの拡張子をゲットする。
+   *
+   * @param file 対象ファイル
+   * @return 拡張子
+   */
+  private String getExtension(File file) {
+    String fileName = file == null ? "" : file.getName();
+    int dotIndex = fileName.lastIndexOf(".");
+    String[] extension = { "" };
 
-        BoolEx.ifTrueElse(
-                dotIndex >= 0 && dotIndex < fileName.length() - 1,
-                () -> extension[0] = fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT)
-        );
+    BoolEx.ifTrueElse(
+        dotIndex >= 0 && dotIndex < fileName.length() - 1,
+        () -> extension[0] = fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT));
 
-        return extension[0];
-    }
+    return extension[0];
+  }
 }
-
