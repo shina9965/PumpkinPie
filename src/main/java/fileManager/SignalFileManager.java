@@ -136,33 +136,138 @@ public class SignalFileManager {
     boolean isBinaryType =
         List.of("bin", "dat", "raw").contains(extension);
 
+    // 要修正
     return isBinaryType
         ? readBinaryFile(file)
         : readTextFile(file);
   }
 
   /**
-   * ファイル出力するためのメソッド。
-   * 再構成された信号データをバイナリファイルとして書き込む。
+   * 信号ファイルの保存場所を選択し、
+   * 選択された保存先の絶対パスを返す。
    *
-   * @param file                書き込み先ファイル
+   * @return 保存先の絶対パス。
+   *         キャンセルされた場合はnull
+   */
+  public String chooseSignalSavePath() {
+    FileChooser fileChooser = new FileChooser();
+
+    fileChooser.setTitle(
+        "信号ファイルの保存先を選択"
+    );
+
+    // 保存画面に最初から表示するファイル名
+    fileChooser.setInitialFileName(
+        "reconstructed_signal.bin"
+    );
+
+    // 現在はfloat型のバイナリ形式で出力する
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter(
+            "バイナリ信号ファイル",
+            "*.bin"
+        )
+    );
+
+    // 保存場所を選択する画面を表示する
+    File selectedFile =
+        fileChooser.showSaveDialog(null);
+
+    // 選択された保存先の絶対パスを返す
+    return Optional.ofNullable(selectedFile)
+        .map(File::getAbsolutePath)
+        .orElse(null);
+  }
+
+  /**
+   * 保存場所を選択し、再構成された信号データを出力する。
+   *
    * @param reconstructedSignal 再構成された信号データ
    * @throws IOException 書き込みに失敗した場合
    */
-  public void exportFile(File file, double[] reconstructedSignal) throws IOException {
+  public void exportSelectedFile(
+      double[] reconstructedSignal
+  ) throws IOException {
+
+    // 出力する信号データが存在するか確認する
+    BoolEx.ifTrueElse(
+        reconstructedSignal == null,
+        () -> {
+          throw new IllegalArgumentException(
+              "reconstructedSignalがnullです。"
+          );
+        }
+    );
+
+    // 保存場所を選択して、絶対パスを取得する
+    String selectedPath = chooseSignalSavePath();
+
+    // 保存画面でキャンセルされた場合
+    BoolEx.ifTrueElse(
+        selectedPath == null,
+        () -> {
+          throw new IllegalArgumentException(
+              "保存先が選択されませんでした。"
+          );
+        }
+    );
+
+    // 取得したパスをFileへ変換する
+    File selectedFile = new File(selectedPath);
+    File[] outputFile = { selectedFile };
+
+    /*
+     * ファイル名に.binが付いていない場合は、
+     * 自動的に.binを追加する。
+     */
+    BoolEx.ifTrueElse(
+        !getExtension(selectedFile).equals("bin"),
+        () -> outputFile[0] =
+            new File(selectedPath + ".bin")
+    );
+
+    // 既存のexportFile()を呼び出して保存する
+    exportFile(
+        outputFile[0],
+        reconstructedSignal
+    );
+  }
+
+  /**
+   * ファイル出力するためのメソッド。
+   * 再構成された信号データをバイナリファイルとして書き込む。
+   *
+   * @param file 書き込み先ファイル
+   * @param reconstructedSignal 再構成された信号データ
+   * @throws IOException 書き込みに失敗した場合
+   */
+  public void exportFile(
+      File file,
+      double[] reconstructedSignal
+  ) throws IOException {
+
     BoolEx.ifTrueElse(
         file == null,
         () -> {
-          throw new IllegalArgumentException("fileがnullです。");
-        });
+          throw new IllegalArgumentException(
+              "fileがnullです。"
+          );
+        }
+    );
 
     BoolEx.ifTrueElse(
         reconstructedSignal == null,
         () -> {
-          throw new IllegalArgumentException("reconstructedSignalがnullです。");
-        });
+          throw new IllegalArgumentException(
+              "reconstructedSignalがnullです。"
+          );
+        }
+    );
 
-    writeBinaryFile(file, reconstructedSignal);
+    writeBinaryFile(
+        file,
+        reconstructedSignal
+    );
   }
 
   /**
