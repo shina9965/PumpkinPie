@@ -1,4 +1,4 @@
-package app;
+package fileManager;
 
 import fileManager.SignalFileManager;
 import java.io.IOException;

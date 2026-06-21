@@ -1,6 +1,9 @@
 package uiController;
 
+import java.io.IOException;
+
 import app.BoolEx;
+import fileManager.SignalFileManager;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -16,6 +19,7 @@ public class SignalWindowController extends WindowController {
 
   // 信号データや係数データ、ボタン情報を管理するModel
   private SignalWindowModel signalWindowModel;
+  private SignalFileManager signalFileManager;
 
   // 現在表示しているJavaFXの画面
   private Stage stage;
@@ -29,6 +33,7 @@ public class SignalWindowController extends WindowController {
 
     this.signalWindowModel = new SignalWindowModel();
     this.signalWindowView = new SignalWindowView(this);
+    this.signalFileManager = new SignalFileManager();
   }
 
   // 信号変換表示画面を表示する
@@ -110,7 +115,18 @@ public class SignalWindowController extends WindowController {
   public void onInputSignal() {
     System.out.println("SignalWindowController: onInputSignal");
 
-    // ファイル入出力担当が実装する。
+    try {
+      var signalData = signalFileManager.importSelectedFile();
+      signalWindowModel.setOriginalSignal(signalData);
+      updateView();
+    } 
+    catch (IOException e) {
+      e.printStackTrace();
+    } 
+    catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+    }
+
      
   }
 
