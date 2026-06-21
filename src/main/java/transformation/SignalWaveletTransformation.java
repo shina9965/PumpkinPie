@@ -8,7 +8,7 @@ import waveletModel.SignalWaveletModel;
  * WaveletTransformationを継承し、SignalWaveletModelを用いて
  * 信号のウェーブレット変換・逆変換を実現する
  */
-public class SignalWaveletTransformation extends WaveletTransformation<SignalWaveletModel> {
+public class SignalWaveletTransformation extends WaveletTransformation<SignalWaveletModel, double[]> { //changeWaveletDataのための変更有(ジェネリクス化)
  
     /** Signal用Model：元信号やウェーブレット係数へのアクセスに使用 */
     private final SignalWaveletModel signalWaveletModel;
