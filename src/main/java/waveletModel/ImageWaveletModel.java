@@ -2,6 +2,7 @@ package waveletModel;
 
 import java.awt.Image;
 import java.io.File;
+
 import app.BoolEx;
 import fileManager.ImageFileManager;
 
