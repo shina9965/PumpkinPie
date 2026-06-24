@@ -125,7 +125,7 @@ public class SignalWindowController extends WindowController {
     } 
     catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
-    }
+    }  
 
      
   }
@@ -134,8 +134,15 @@ public class SignalWindowController extends WindowController {
   public void onSaveSignal() {
     System.out.println("SignalWindowController: onSaveSignal");
 
-    // ファイル入出力担当が実装する。
-     
+    try {
+      signalFileManager.exportSelectedFile(signalWindowModel.getOriginalSignal());
+    } 
+    catch (IOException e) {
+      e.printStackTrace();
+    } 
+    catch (IllegalArgumentException e) {
+      System.out.println(e.getMessage());
+    }  
   }
 
   // 係数がクリックされたときに係数の有効・無効を切り替える
