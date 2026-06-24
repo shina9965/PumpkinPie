@@ -66,6 +66,12 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
      */
     public ImageWaveletModel startImageWaveletTransformation() {
         double[][] original   = imageWaveletModel.getOriginalImage();
+        BoolEx.ifTrueElse(
+            original == null || original.length < 2 || original[0].length < 2,
+            () -> { throw new IllegalArgumentException("画像データは2行以上かつ2列以上必要です: size=" + original.length + "x" + (original.length > 0 ? original[0].length : 0)); },
+            () -> {}
+        );
+        
         double[][] padded     = padding(original);
         double[][] rowApplied = transformRows(padded);
         double[][] transposed = transpose(rowApplied);

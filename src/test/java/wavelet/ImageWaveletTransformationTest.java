@@ -6,6 +6,8 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import transformation.ImageWaveletTransformation;
@@ -43,7 +45,7 @@ public class ImageWaveletTransformationTest {
     void changeWaveletDataで元信号をModelに設定できる() throws Exception{
         ImageWaveletTransformation transformation = new ImageWaveletTransformation();
 
-        double[][] image = loadImage("images/abs.jpg");
+        double[][] image = loadImage("src/test/java/wavelet/images/smalltalkBalloon.jpg");
 
         transformation.changeWaveletData(image);
 
@@ -67,13 +69,87 @@ public class ImageWaveletTransformationTest {
         );
     }
 
-    // @Test 
-    // void 奇数長の画像はpaddingして変換できる(){
+    @Test 
+    void 奇数長の画像はpaddingして変換できる(){
+        ImageWaveletTransformation transformation = new ImageWaveletTransformation();
 
-    // }
+        transformation.changeWaveletData(new double[][]{{4.0,2.0},{6.0,8.0},{8.0,2.0}});
 
-    // @Test
-    // void heightとwidthが違う値の画像を変換できる(){
+        ImageWaveletModel result = transformation.startImageWaveletTransformation();
 
-    // }
+        assertArrayEquals(
+            new double[][]{{5,0},{5,3},{-2,1},{0,0}}, 
+            result.getTransformedImage()
+        );
+    }
+
+    @Test
+    void 偶数長の画像を変換して逆変換すると元に戻る() {
+        ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+        double[][] original = {{10.0,6.0,4.0,2.0}, {6.0,10.0,2.0,4.0}, {4.0,2.0,10.0,6.0}, {2.0,4.0,6.0,10.0}};
+
+        transformation.changeWaveletData(original);
+        transformation.startWaveletTransformation();
+
+        ImageWaveletModel result = transformation.startInverseWaveletTransformation();
+
+        assertArrayEquals(
+            original,
+            result.getReconstructedImage()
+        );
+    }
+
+    @Test
+    void 奇数長の画像を変換して逆変換するとpaddingが除去されて元に戻る() {
+        ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+        double[][] original = {{10.0,6.0,4.0}, {6.0,10.0,2.0}, {4.0,2.0,10.0}};
+
+        transformation.changeWaveletData(original);
+        transformation.startWaveletTransformation();
+
+        ImageWaveletModel result = transformation.startInverseWaveletTransformation();
+
+        assertArrayEquals(
+            original,
+            result.getReconstructedImage()
+        );
+    }
+
+    @Test
+    void getSignalWaveletModelで同じModelを取得できる() {
+    ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+    transformation.changeWaveletData(new double[][]{{1.0, 2.0},{2,3}});
+
+    ImageWaveletModel model1 = transformation.getImageWaveletModel();
+    ImageWaveletModel model2 = transformation.startWaveletTransformation();
+
+    assertSame(model1, model2);
+    }
+
+    @Test
+    void 入力が空の配列の場合例外を投げる() {
+    ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+    transformation.changeWaveletData(new double[][]{{}});
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> transformation.startWaveletTransformation()
+    );
+    }
+
+    @Test
+    void 入力が1要素の場合例外を投げる() {
+    ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+    transformation.changeWaveletData(new double[][]{{1.0,1}});
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> transformation.startWaveletTransformation()
+    );
+    }
 }
