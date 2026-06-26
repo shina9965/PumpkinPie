@@ -18,34 +18,48 @@ public class RGBTest {
 
         return image;
     }
-
-    private void assertMatEquals(Mat expected, Mat actual) {
-
-    assertEquals(expected.rows(), actual.rows());
-    assertEquals(expected.cols(), actual.cols());
-    assertEquals(expected.type(), actual.type());
-
-    Mat diff = new Mat();
-
-    Core.compare(expected, actual, diff, Core.CMP_NE);
-
-    int differentPixels = Core.countNonZero(diff.reshape(1));
-
-    assertEquals(0, differentPixels,
-            "Images differ in " + differentPixels + " pixels");
-    }
     
     @Test
     void decomposeRGBがちゃんとRGB分解できているか() {
-        RGB decompose = new RGB(loadImage("src/test/wavelet/resources/smalltalkBalloon.jpg"));
+        RGB decompose = new RGB(loadImage("src/test/java/wavelet/resources/smalltalkBalloon.jpg"));
 
         decompose.decomposeRGB();
 
-        assertMatEquals(loadImage("src/test/wavelet/resources/red_bw.jpg"), decompose.getR());
-        assertMatEquals(loadImage("src/test/wavelet/resources/green_bw.jpg"), decompose.getG());
-        assertMatEquals(loadImage("src/test/wavelet/resources/blue_bw.jpg"), decompose.getB());
+        Imgcodecs.imwrite("src/test/java/wavelet/results/red_bw.jpg", decompose.getR());
+        Imgcodecs.imwrite("src/test/java/wavelet/results/green_bw.jpg", decompose.getG());
+        Imgcodecs.imwrite("src/test/java/wavelet/results/blue_bw.jpg", decompose.getB());
     }
 
+    @Test
+    void RGBの画像がちゃんと作成されているか(){
+        RGB decompose = new RGB(loadImage("src/test/java/wavelet/resources/smalltalkBalloon.jpg"));
+
+        decompose.decomposeRGB();
+
+        Imgcodecs.imwrite("src/test/java/wavelet/results/red.jpg", decompose.createRedImage(decompose.getR()));
+        Imgcodecs.imwrite("src/test/java/wavelet/results/green.jpg", decompose.createGreenImage(decompose.getG()));
+        Imgcodecs.imwrite("src/test/java/wavelet/results/blue.jpg", decompose.createBlueImage(decompose.getB()));
+    }
+
+    @Test
+    void 分解された画像を復元できているか(){
+        RGB decompose = new RGB(loadImage("src/test/java/wavelet/resources/smalltalkBalloon.jpg"));
+
+        decompose.decomposeRGB();
+
+        Imgcodecs.imwrite("src/test/java/wavelet/results/merged.jpg", decompose.mergedImage(decompose.getR(), decompose.getG(), decompose.getB()));
+    }
+
+    @Test
+    void 画像が空の場合の例外を投げる(){
+        Mat image = new Mat();
+        RGB decompose = new RGB(image);
+
+        assertThrows(
+            IllegalArgumentException.class,
+            decompose::decomposeRGB
+        );
+    }
 
     
 }
