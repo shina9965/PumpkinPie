@@ -1,16 +1,15 @@
 package fileManager;
 
 import app.BoolEx;
-import java.awt.FileDialog;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import javafx.stage.FileChooser;
 
 /**
  * 画像ファイルの入力と出力を管理するクラス。
@@ -30,9 +29,6 @@ public class ImageFileManager extends IFileManager {
   /** 出力する拡張子 */
   private final String outputExtension;
 
-  /** ファイル選択画面 */
-  private FileDialog fileDialog;
-
   /**
    * コンストラクタ。
    * 入出力に使用する拡張子を初期化する。
@@ -40,13 +36,13 @@ public class ImageFileManager extends IFileManager {
   public ImageFileManager() {
     this.inputFile = null;
     this.outputFile = null;
+    
     this.acceptedExtensions = new String[] {
         "png",
         "jpg",
         "jpeg"
     };
     this.outputExtension = "png";
-    this.fileDialog = null;
   }
 
   /**
@@ -56,28 +52,28 @@ public class ImageFileManager extends IFileManager {
    *         キャンセルされた場合はnull
    */
   public File chooseImageFile() {
-    fileDialog = new FileDialog(
-        (java.awt.Frame) null,
-        "画像ファイルを選択",
-        FileDialog.LOAD
+    FileChooser fileChooser = new FileChooser();
+
+    fileChooser.setTitle("画像ファイルを選択");
+
+    fileChooser.getExtensionFilters().addAll(
+        new FileChooser.ExtensionFilter(
+            "対応する画像ファイル",
+            "*.png",
+            "*.jpg",
+            "*.jpeg"
+        ),
+        new FileChooser.ExtensionFilter(
+            "すべてのファイル",
+            "*.*"
+        )
     );
 
-    FilenameFilter imageFilter =
-        (directory, name) -> isSupportedFileType(new File(directory, name));
-    fileDialog.setFilenameFilter(imageFilter);
+    File selectedFile = fileChooser.showOpenDialog(null);
 
-    showFileDialog(fileDialog);
-
-    String fileName = fileDialog.getFile();
-
-    if (fileName == null) {
+    if (selectedFile == null) {
       return null;
     }
-
-    File selectedFile = new File(
-        fileDialog.getDirectory(),
-        fileName
-    );
 
     BoolEx.ifTrueElse(
         !isSupportedFileType(selectedFile),
@@ -100,26 +96,23 @@ public class ImageFileManager extends IFileManager {
    *         キャンセルされた場合はnull
    */
   public File chooseImageSaveFile() {
-    fileDialog = new FileDialog(
-        (java.awt.Frame) null,
-        "画像ファイルの保存先を選択",
-        FileDialog.SAVE
+    FileChooser fileChooser = new FileChooser();
+
+    fileChooser.setTitle("画像ファイルの保存先を選択");
+    fileChooser.setInitialFileName("reconstructed_image.png");
+
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter(
+            "PNG画像ファイル",
+            "*.png"
+        )
     );
 
-    fileDialog.setFile("reconstructed_image.png");
+    File selectedFile = fileChooser.showSaveDialog(null);
 
-    showFileDialog(fileDialog);
-
-    String fileName = fileDialog.getFile();
-
-    if (fileName == null) {
+    if (selectedFile == null) {
       return null;
     }
-
-    File selectedFile = new File(
-        fileDialog.getDirectory(),
-        fileName
-    );
 
     outputFile = correctOutputExtension(selectedFile);
 
@@ -469,7 +462,4 @@ public class ImageFileManager extends IFileManager {
     );
   }
 
-  private void showFileDialog(FileDialog dialog) {
-    dialog.setVisible(true);
-  }
 }
