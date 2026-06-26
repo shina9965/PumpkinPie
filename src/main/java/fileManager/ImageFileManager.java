@@ -1,13 +1,11 @@
 package fileManager;
 
 import app.BoolEx;
-import java.awt.EventQueue;
 import java.awt.FileDialog;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Locale;
 import javax.imageio.ImageIO;
@@ -471,39 +469,7 @@ public class ImageFileManager extends IFileManager {
     );
   }
 
-  /**
-   * AWTのイベントディスパッチスレッドでFileDialogを表示する。
-   *
-   * @param dialog 表示するファイル選択画面
-   */
   private void showFileDialog(FileDialog dialog) {
-    try {
-      if (EventQueue.isDispatchThread()) {
-        dialog.setVisible(true);
-      } else {
-        EventQueue.invokeAndWait(() -> dialog.setVisible(true));
-      }
-    } catch (InterruptedException exception) {
-      Thread.currentThread().interrupt();
-      throw new IllegalStateException(
-          "ファイル選択画面の表示中に割り込まれました。",
-          exception
-      );
-    } catch (InvocationTargetException exception) {
-      Throwable cause = exception.getCause();
-
-      if (cause instanceof RuntimeException runtimeException) {
-        throw runtimeException;
-      }
-
-      if (cause instanceof Error error) {
-        throw error;
-      }
-
-      throw new IllegalStateException(
-          "ファイル選択画面の表示に失敗しました。",
-          cause
-      );
-    }
+    dialog.setVisible(true);
   }
 }
