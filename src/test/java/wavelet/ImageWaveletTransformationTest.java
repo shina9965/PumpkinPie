@@ -2,6 +2,7 @@ package wavelet;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
@@ -39,6 +40,34 @@ public class ImageWaveletTransformationTest {
         }
 
         return image;
+    }
+
+    private BufferedImage createImage(double[][] image) {
+        int width = image.length;
+        int height = image[0].length;
+
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+
+                int gray = (int) Math.round(image[x][y]);
+
+                // Clamp to [0,255]
+                gray = Math.max(0, Math.min(255, gray));
+
+                int rgb = (gray << 16) | (gray << 8) | gray;
+
+                img.setRGB(x, y, rgb);
+            }
+        }
+
+        return img;
+    }
+
+    private void saveImage(double[][] image, String filename) throws IOException {
+        BufferedImage img = createImage(image);
+        ImageIO.write(img, "jpg", new File(filename));
     }
 
     @Test
@@ -84,6 +113,19 @@ public class ImageWaveletTransformationTest {
     }
 
     @Test
+    void 画像は変換できるか() throws Exception{
+        ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+        double[][] image = loadImage("src/test/java/wavelet/images/smalltalkBalloon.jpg");
+
+        transformation.changeWaveletData(image);
+
+        ImageWaveletModel result = transformation.startImageWaveletTransformation();
+
+        saveImage(result.getTransformedImage(), "src/test/java/wavelet/results/transformed.jpg");
+    }
+
+    @Test
     void 偶数長の画像を変換して逆変換すると元に戻る() {
         ImageWaveletTransformation transformation = new ImageWaveletTransformation();
 
@@ -115,6 +157,20 @@ public class ImageWaveletTransformationTest {
             original,
             result.getReconstructedImage()
         );
+    }
+
+    @Test
+    void 画像は逆変換できるか() throws Exception{
+        ImageWaveletTransformation transformation = new ImageWaveletTransformation();
+
+        double[][] image = loadImage("src/test/java/wavelet/images/smalltalkBalloon.jpg");
+
+        transformation.changeWaveletData(image);
+        transformation.startWaveletTransformation();
+
+        ImageWaveletModel result = transformation.startInverseWaveletTransformation();
+
+        saveImage(result.getReconstructedImage(), "src/test/java/wavelet/results/reconstructed.jpg");
     }
 
     @Test
@@ -152,4 +208,5 @@ public class ImageWaveletTransformationTest {
         () -> transformation.startWaveletTransformation()
     );
     }
+
 }
