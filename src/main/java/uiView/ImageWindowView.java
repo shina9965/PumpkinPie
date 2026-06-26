@@ -81,8 +81,13 @@ public class ImageWindowView {
     return imagePane;
   }
 
-  // ImageWindowModelが持つボタン情報を使って、画像入力・戻るボタンを作成する
+  // ImageWindowModelが持つボタン情報を使って、画像保存・画像入力・戻るボタンを作成する
   private HBox createButtons(ImageWindowModel imageWindowModel) {
+    Button saveButton = createButton(
+        imageWindowModel.getSaveImageButtonData().text(),
+        imageWindowModel.getSaveImageButtonData().id()
+    );
+
     Button inputButton = createButton(
         imageWindowModel.getInputImageButtonData().text(),
         imageWindowModel.getInputImageButtonData().id()
@@ -94,12 +99,12 @@ public class ImageWindowView {
     );
 
     HBox leftButtons = new HBox(30);
-    leftButtons.getChildren().add(inputButton);
+    leftButtons.getChildren().addAll(saveButton, inputButton);
 
     HBox rightButtons = new HBox();
     rightButtons.getChildren().add(returnButton);
 
-    HBox buttonBox = new HBox(820);
+    HBox buttonBox = new HBox(680);
     buttonBox.setPadding(new Insets(25, 40, 10, 40));
     buttonBox.setAlignment(Pos.CENTER);
     buttonBox.getChildren().addAll(leftButtons, rightButtons);

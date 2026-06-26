@@ -12,6 +12,10 @@ public class ImageWindowModel {
   private final ButtonRecord inputImageButtonData =
       new ButtonRecord("画像入力", "INPUT_IMAGE");
 
+  // 画像保存ボタンの表示文字とIDを保持する
+  private final ButtonRecord saveImageButtonData =
+      new ButtonRecord("画像保存", "SAVE_IMAGE");
+
   // 戻るボタンの表示文字とIDを保持する
   private final ButtonRecord returnButtonData =
       new ButtonRecord("戻る", "RETURN");
@@ -34,6 +38,11 @@ public class ImageWindowModel {
   // 画像入力ボタンのデータを取得する
   public ButtonRecord getInputImageButtonData() {
     return inputImageButtonData;
+  }
+
+  // 画像保存ボタンのデータを取得する
+  public ButtonRecord getSaveImageButtonData() {
+    return saveImageButtonData;
   }
 
   // 戻るボタンのデータを取得する

@@ -76,6 +76,14 @@ public class ImageWindowController extends WindowController {
           );
 
           BoolEx.ifTrueElse(
+              imageWindowModel.getSaveImageButtonData().id().equals(buttonId),
+              () -> {
+                onSaveImage();
+                System.out.println("ImageWindowController: Save Button Clicked");
+              }
+          );
+
+          BoolEx.ifTrueElse(
               imageWindowModel.getReturnButtonData().id().equals(buttonId),
               () -> {
                 onReturn();
@@ -112,6 +120,30 @@ public class ImageWindowController extends WindowController {
       Image image = imageFileManager.importSelectedFile();
       imageWindowModel.setOriginalImage(image);
       updateView();
+    } catch (IOException exception) {
+      exception.printStackTrace();
+    } catch (IllegalArgumentException exception) {
+      System.out.println(exception.getMessage());
+    }
+  }
+
+  // 画像保存ボタンが押されたときに表示中の画像をPNG形式で保存する
+  public void onSaveImage() {
+    System.out.println("ImageWindowController: onSaveImage");
+
+    try {
+      Image image = imageWindowModel.getOriginalImage();
+
+      BoolEx.ifTrueElse(
+          image == null,
+          () -> {
+            throw new IllegalArgumentException(
+                "保存する画像がありません。"
+            );
+          }
+      );
+
+      imageFileManager.exportSelectedFile(image);
     } catch (IOException exception) {
       exception.printStackTrace();
     } catch (IllegalArgumentException exception) {
