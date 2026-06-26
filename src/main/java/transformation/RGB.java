@@ -42,7 +42,7 @@ public class RGB{
         Core.split(image, channels);
 
         if (channels.size() < 3) {
-            throw new IllegalArgumentException("Input image does not contain 3 color channels");
+            throw new IllegalArgumentException("入力画像のチャネル数は3ではない");
         }
 
         this.B = channels.get(0);
