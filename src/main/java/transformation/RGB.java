@@ -3,7 +3,11 @@ package transformation;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 
 public class RGB{
     //フィールド
@@ -13,12 +17,20 @@ public class RGB{
     private Mat B;      //分解された画像の青チャネル画像
 
     //コンストラクタ
-    public RGB(Mat image){
-        this.image = image;
+    public RGB(Image img){
+        BufferedImage buffered;
+
+        buffered = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_3BYTE_BGR);
+
+        this.image = new Mat(buffered.getHeight(), buffered.getWidth(),CvType.CV_8UC3);
+        byte[] pixels = ((DataBufferByte) buffered.getRaster().getDataBuffer()).getData();
+        
+        this.image.put(0, 0, pixels);
         this.R = new Mat();
         this.G = new Mat();
         this.B = new Mat();
     }
+    
 
     //メソッド
     public void decomposeRGB(){
@@ -29,6 +41,11 @@ public class RGB{
         this.R = channels.get(2);
          
     }                                        //imageを分解し、リストたちに値を代入
+
+    public Mat getImage(){
+        return image;
+    }
+
     public Mat getR(){                               //RListを返す
         return R;
     }
@@ -98,5 +115,55 @@ public class RGB{
         Core.merge(channels, mergedImage);
 
         return mergedImage;
+    }
+
+    public double[][] matToDoubleArray(Mat mat) {
+
+        int rows = mat.rows();
+        int cols = mat.cols();
+
+        double[][] result = new double[rows][cols];
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                result[y][x] = mat.get(y, x)[0];
+            }
+        }
+
+        return result;
+    }
+
+    public Mat doubleArrayToMat(double[][] data) {
+        int rows = data.length;
+        int cols = data[0].length;
+
+        Mat mat = new Mat(rows, cols, CvType.CV_8UC1);
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                double value = Math.max(0, Math.min(255, data[y][x]));
+                mat.put(y, x, value);
+            }
+        }
+
+        return mat;
+    }
+
+    public Image matToImage(Mat mat) {
+
+        BufferedImage image = new BufferedImage(
+            mat.cols(),
+            mat.rows(),
+            BufferedImage.TYPE_3BYTE_BGR);
+
+        byte[] source = new byte[(int) (mat.total() * mat.channels())];
+        mat.get(0, 0, source);
+
+        byte[] target = ((DataBufferByte) image.getRaster()
+            .getDataBuffer()).getData();
+
+        System.arraycopy(source, 0, target, 0, source.length);
+
+        return image;
     }
 }

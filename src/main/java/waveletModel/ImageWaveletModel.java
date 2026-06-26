@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.io.File;
 import app.BoolEx;
 import fileManager.ImageFileManager;
+import transformation.RGB;
 
 /**
  * 画像ウェーブレット変換に使用するデータモデル
@@ -28,6 +29,8 @@ public class ImageWaveletModel extends WaveletModel {
 
     /** 画像ファイル管理 */
     private final ImageFileManager imageFileManager;
+
+    private RGB rgb;
 
     // ===== コンストラクタ =====
 
@@ -54,7 +57,8 @@ public class ImageWaveletModel extends WaveletModel {
     public void loadImage(String path) {
         File file           = new File(path);
         Image image         = imageFileManager.importFile(file);
-        this.originalImage  = convertImageToDoubleArray(image);
+        this.rgb            = new RGB(image);
+        this.originalImage  = rgb.matToDoubleArray(rgb.getImage());
         this.originalHeight = originalImage.length;
         this.originalWidth  = originalImage[0].length;
     }
@@ -69,86 +73,9 @@ public class ImageWaveletModel extends WaveletModel {
         boolean hasReconstructed = reconstructedImage != null && reconstructedImage.length > 0;
         BoolEx.ifTrueElse(
             hasReconstructed,
-            () -> imageFileManager.exportFile(file, convertDoubleArrayToImage(reconstructedImage)),
-            () -> imageFileManager.exportFile(file, convertDoubleArrayToImage(transformedImage))
+            () -> imageFileManager.exportFile(file, rgb.matToImage(rgb.doubleArrayToMat(reconstructedImage))),
+            () -> imageFileManager.exportFile(file, rgb.matToImage(rgb.doubleArrayToMat(transformedImage)))
         );
-    }
-
-    // ===== 変換ユーティリティ（Image ↔ double[][]） =====
-
-    /**
-     * java.awt.Image を double[][] へ変換する（グレースケール輝度値）
-     *
-     * @param image 入力画像
-     * @return グレースケール輝度値の2次元配列
-     */
-    private double[][] convertImageToDoubleArray(Image image) {
-        java.awt.image.BufferedImage buffered = toBufferedImage(image);
-        int height        = buffered.getHeight();
-        int width         = buffered.getWidth();
-        double[][] result = new double[height][width];
-        int[] row         = {0};
-        BoolEx.forTrue(0, height, () -> {
-            int[] col = {0};
-            BoolEx.forTrue(0, width, () -> {
-                int rgb = buffered.getRGB(col[0], row[0]);
-                int r   = (rgb >> 16) & 0xFF;
-                int g   = (rgb >>  8) & 0xFF;
-                int b   =  rgb        & 0xFF;
-                result[row[0]][col[0]] = 0.299 * r + 0.587 * g + 0.114 * b;
-                col[0]++;
-            });
-            row[0]++;
-        });
-        return result;
-    }
-
-    /**
-     * double[][] を java.awt.Image へ変換する（グレースケール）
-     *
-     * @param data グレースケール輝度値の2次元配列
-     * @return 変換後の Image
-     */
-    private Image convertDoubleArrayToImage(double[][] data) {
-        int height = data.length;
-        int width  = data[0].length;
-        java.awt.image.BufferedImage buffered =
-            new java.awt.image.BufferedImage(width, height, java.awt.image.BufferedImage.TYPE_INT_RGB);
-        int[] row = {0};
-        BoolEx.forTrue(0, height, () -> {
-            int[] col = {0};
-            BoolEx.forTrue(0, width, () -> {
-                int[] clamped = {(int) Math.round(data[row[0]][col[0]])};
-                BoolEx.ifTrueElse(clamped[0] < 0,  () -> clamped[0] = 0);
-                BoolEx.ifTrueElse(clamped[0] > 255, () -> clamped[0] = 255);
-                int grayRgb = (clamped[0] << 16) | (clamped[0] << 8) | clamped[0];
-                buffered.setRGB(col[0], row[0], grayRgb);
-                col[0]++;
-            });
-            row[0]++;
-        });
-        return buffered;
-    }
-
-    /**
-     * java.awt.Image を BufferedImage へ変換する
-     *
-     * @param image 変換元 Image
-     * @return BufferedImage
-     */
-    private java.awt.image.BufferedImage toBufferedImage(Image image) {
-        if (image instanceof java.awt.image.BufferedImage bi) {
-            return bi;
-        }
-        java.awt.image.BufferedImage buffered = new java.awt.image.BufferedImage(
-            image.getWidth(null),
-            image.getHeight(null),
-            java.awt.image.BufferedImage.TYPE_INT_RGB
-        );
-        java.awt.Graphics2D g2d = buffered.createGraphics();
-        g2d.drawImage(image, 0, 0, null);
-        g2d.dispose();
-        return buffered;
     }
 
     // ===== Getter / Setter =====
