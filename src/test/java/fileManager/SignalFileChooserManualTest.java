@@ -1,6 +1,5 @@
 package fileManager;
 
-import fileManager.SignalFileManager;
 import java.io.IOException;
 import java.util.Arrays;
 import javafx.application.Application;
