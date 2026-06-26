@@ -16,6 +16,13 @@ public class SignalFileChooserManualTest extends Application {
     SignalFileManager manager = new SignalFileManager();
 
     try {
+      System.out.println("=== エクスポートのテスト ===");
+      double[] dummyData = { 1.5, 2.5, 3.5, 4.5 };
+      System.out.println("書き込むデータ: " + Arrays.toString(dummyData));
+      manager.exportSelectedFile(dummyData);
+      System.out.println("エクスポートが完了しました。");
+
+      System.out.println("\n=== インポートのテスト ===");
       // ファイル選択画面を表示し、選択したファイルを読み込む。
       double[] signalData = manager.importSelectedFile();
 
@@ -29,12 +36,12 @@ public class SignalFileChooserManualTest extends Application {
 
     } catch (IOException exception) {
       System.out.println(
-          "読み込みエラー: " + exception.getMessage()
+          "I/Oエラー: " + exception.getMessage()
       );
 
     } catch (IllegalArgumentException exception) {
       System.out.println(
-          "入力エラー: " + exception.getMessage()
+          "入力エラーまたはキャンセル: " + exception.getMessage()
       );
 
     } finally {
