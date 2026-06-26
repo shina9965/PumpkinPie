@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.FileChooser;
 
 
@@ -218,10 +220,37 @@ public class SignalFileManager {
      * ファイル名に.binが付いていない場合は、
      * 自動的に.binを追加する。
      */
+    boolean[] addedExtension = { false };
     BoolEx.ifTrueElse(
         !getExtension(selectedFile).equals("bin"),
-        () -> outputFile[0] =
-            new File(selectedPath + ".bin")
+        () -> {
+          outputFile[0] = new File(selectedPath + ".bin");
+          addedExtension[0] = true;
+        }
+    );
+
+    // .binを自動補完した結果、既に同名ファイルが存在する場合は警告を出し直す
+    BoolEx.ifTrueElse(
+        addedExtension[0] && outputFile[0].exists(),
+        () -> {
+          Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+          alert.setTitle("上書き保存の確認");
+          alert.setHeaderText(null);
+          alert.setContentText(outputFile[0].getName() + " は既に存在します。上書きしますか？");
+          
+          Optional<ButtonType> result = alert.showAndWait();
+          BoolEx.ifTrueElse(
+              result.isPresent() && result.get() == ButtonType.OK,
+              () -> {
+                // 上書きに同意した場合はそのまま継続
+              },
+              () -> {
+                throw new IllegalArgumentException(
+                    "上書き保存がキャンセルされました。"
+                );
+              }
+          );
+        }
     );
 
     // 既存のexportFile()を呼び出して保存する
@@ -315,12 +344,9 @@ public class SignalFileManager {
             }
           });
     } catch (RuntimeException exception) {
-      BoolEx.ifTrueElse(
-          exception.getCause() instanceof IOException,
-          () -> {
-            throw new RuntimeException(exception.getCause());
-          });
-
+      if (exception.getCause() instanceof IOException) {
+        throw (IOException) exception.getCause();
+      }
       throw exception;
     }
 
@@ -400,6 +426,12 @@ public class SignalFileManager {
         () -> {
           throw new IllegalArgumentException("reconstructedSignalがnullです。");
         });
+    // ディレクトリが存在しない場合、ディレクトリを作成する
+    File parentDir = file.getParentFile();
+    BoolEx.ifTrueElse(
+        parentDir != null && !parentDir.exists(),
+        () -> parentDir.mkdirs()
+    );
 
     try (DataOutputStream outputStream = new DataOutputStream(
         new BufferedOutputStream(Files.newOutputStream(file.toPath())))) {
@@ -416,12 +448,9 @@ public class SignalFileManager {
             }
           });
     } catch (RuntimeException exception) {
-      BoolEx.ifTrueElse(
-          exception.getCause() instanceof IOException,
-          () -> {
-            throw new RuntimeException(exception.getCause());
-          });
-
+      if (exception.getCause() instanceof IOException) {
+        throw (IOException) exception.getCause();
+      }
       throw exception;
     }
   }
