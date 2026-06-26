@@ -4,6 +4,7 @@ import app.BoolEx;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Locale;
 import javax.imageio.ImageIO;
@@ -36,7 +37,7 @@ public class ImageFileManager extends IFileManager {
   public ImageFileManager() {
     this.inputFile = null;
     this.outputFile = null;
-    
+
     this.acceptedExtensions = new String[] {
         "png",
         "jpg",
@@ -61,32 +62,29 @@ public class ImageFileManager extends IFileManager {
             "対応する画像ファイル",
             "*.png",
             "*.jpg",
-            "*.jpeg"
-        ),
+            "*.jpeg"),
         new FileChooser.ExtensionFilter(
             "すべてのファイル",
-            "*.*"
-        )
-    );
+            "*.*"));
 
     File selectedFile = fileChooser.showOpenDialog(null);
-
-    if (selectedFile == null) {
-      return null;
-    }
+    File[] chosenFile = {null};
 
     BoolEx.ifTrueElse(
-        !isSupportedFileType(selectedFile),
+        selectedFile != null,
         () -> {
-          throw new IllegalArgumentException(
-              "対応していない拡張子です: " + getExtension(selectedFile)
-          );
-        }
-    );
+          BoolEx.ifTrueElse(
+              !isSupportedFileType(selectedFile),
+              () -> {
+                throw new IllegalArgumentException(
+                    "対応していない拡張子です: " + getExtension(selectedFile));
+              });
 
-    inputFile = selectedFile;
+          inputFile = selectedFile;
+          chosenFile[0] = inputFile;
+        });
 
-    return inputFile;
+    return chosenFile[0];
   }
 
   /**
@@ -104,19 +102,19 @@ public class ImageFileManager extends IFileManager {
     fileChooser.getExtensionFilters().add(
         new FileChooser.ExtensionFilter(
             "PNG画像ファイル",
-            "*.png"
-        )
-    );
+            "*.png"));
 
     File selectedFile = fileChooser.showSaveDialog(null);
+    File[] chosenFile = {null};
 
-    if (selectedFile == null) {
-      return null;
-    }
+    BoolEx.ifTrueElse(
+        selectedFile != null,
+        () -> {
+          outputFile = correctOutputExtension(selectedFile);
+          chosenFile[0] = outputFile;
+        });
 
-    outputFile = correctOutputExtension(selectedFile);
-
-    return outputFile;
+    return chosenFile[0];
   }
 
   /**
@@ -132,10 +130,8 @@ public class ImageFileManager extends IFileManager {
         selectedFile == null,
         () -> {
           throw new IllegalArgumentException(
-              "ファイルが選択されませんでした。"
-          );
-        }
-    );
+              "ファイルが選択されませんでした。");
+        });
 
     return importFile(selectedFile);
   }
@@ -151,10 +147,8 @@ public class ImageFileManager extends IFileManager {
         reconstructedImage == null,
         () -> {
           throw new IllegalArgumentException(
-              "reconstructedImageがnullです。"
-          );
-        }
-    );
+              "reconstructedImageがnullです。");
+        });
 
     File selectedFile = chooseImageSaveFile();
 
@@ -162,10 +156,8 @@ public class ImageFileManager extends IFileManager {
         selectedFile == null,
         () -> {
           throw new IllegalArgumentException(
-              "保存先が選択されませんでした。"
-          );
-        }
-    );
+              "保存先が選択されませんでした。");
+        });
 
     exportFile(selectedFile, reconstructedImage);
   }
@@ -182,35 +174,28 @@ public class ImageFileManager extends IFileManager {
         file == null,
         () -> {
           throw new IllegalArgumentException("fileがnullです。");
-        }
-    );
+        });
 
     BoolEx.ifTrueElse(
         !file.exists(),
         () -> {
           throw new IllegalArgumentException(
-              "ファイルが存在しません: " + file.getPath()
-          );
-        }
-    );
+              "ファイルが存在しません: " + file.getPath());
+        });
 
     BoolEx.ifTrueElse(
         !file.isFile(),
         () -> {
           throw new IllegalArgumentException(
-              "通常ファイルではありません: " + file.getPath()
-          );
-        }
-    );
+              "通常ファイルではありません: " + file.getPath());
+        });
 
     BoolEx.ifTrueElse(
         !isSupportedFileType(file),
         () -> {
           throw new IllegalArgumentException(
-              "対応していない拡張子です: " + getExtension(file)
-          );
-        }
-    );
+              "対応していない拡張子です: " + getExtension(file));
+        });
 
     Image image = readImageFile(file);
 
@@ -224,30 +209,26 @@ public class ImageFileManager extends IFileManager {
   /**
    * 指定されたファイルへ再構成された画像をPNG形式で出力する。
    *
-   * @param file 書き込み先ファイル
+   * @param file               書き込み先ファイル
    * @param reconstructedImage 再構成された画像
    * @throws IOException 書き込みに失敗した場合
    */
   public void exportFile(
       File file,
-      Image reconstructedImage
-  ) throws IOException {
+      Image reconstructedImage) throws IOException {
 
     BoolEx.ifTrueElse(
         file == null,
         () -> {
           throw new IllegalArgumentException("fileがnullです。");
-        }
-    );
+        });
 
     BoolEx.ifTrueElse(
         reconstructedImage == null,
         () -> {
           throw new IllegalArgumentException(
-              "reconstructedImageがnullです。"
-          );
-        }
-    );
+              "reconstructedImageがnullです。");
+        });
 
     validateImage(reconstructedImage, "reconstructedImage");
 
@@ -286,57 +267,67 @@ public class ImageFileManager extends IFileManager {
     } catch (IOException exception) {
       throw new IOException(
           "画像ファイルの読み込みに失敗しました: " + file.getPath(),
-          exception
-      );
+          exception);
     }
 
-    if (bufferedImage == null) {
-      throw new IOException(
-          "画像として読み込めません: " + file.getPath()
-      );
+    Image[] image = {null};
+
+    try {
+      BoolEx.ifTrueElse(
+          bufferedImage == null,
+          () -> {
+            throw new UncheckedIOException(
+                new IOException("画像として読み込めません: " + file.getPath()));
+          });
+
+      image[0] = SwingFXUtils.toFXImage(bufferedImage, null);
+
+      BoolEx.ifTrueElse(
+          image[0] == null,
+          () -> {
+            throw new UncheckedIOException(
+                new IOException("JavaFX Imageへの変換に失敗しました: " + file.getPath()));
+          });
+    } catch (UncheckedIOException exception) {
+      throw exception.getCause();
     }
 
-    Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-
-    if (image == null) {
-      throw new IOException(
-          "JavaFX Imageへの変換に失敗しました: " + file.getPath()
-      );
-    }
-
-    return image;
+    return image[0];
   }
 
   /**
    * JavaFX ImageをPNG形式で保存する。
    *
-   * @param file 書き込み先ファイル
+   * @param file               書き込み先ファイル
    * @param reconstructedImage 再構成された画像
    * @throws IOException 書き込みに失敗した場合
    */
   private void writeImageFile(
       File file,
-      Image reconstructedImage
-  ) throws IOException {
-    BufferedImage bufferedImage =
-        SwingFXUtils.fromFXImage(reconstructedImage, null);
+      Image reconstructedImage) throws IOException {
+    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(reconstructedImage, null);
 
-    if (bufferedImage == null) {
-      throw new IOException(
-          "BufferedImageへの変換に失敗しました: " + file.getPath()
-      );
-    }
+    try {
+      BoolEx.ifTrueElse(
+          bufferedImage == null,
+          () -> {
+            throw new UncheckedIOException(
+                new IOException("BufferedImageへの変換に失敗しました: " + file.getPath()));
+          });
 
-    boolean written = ImageIO.write(
-        bufferedImage,
-        outputExtension,
-        file
-    );
+      boolean written = ImageIO.write(
+          bufferedImage,
+          outputExtension,
+          file);
 
-    if (!written) {
-      throw new IOException(
-          "PNG形式で書き込めませんでした: " + file.getPath()
-      );
+      BoolEx.ifTrueElse(
+          !written,
+          () -> {
+            throw new UncheckedIOException(
+                new IOException("PNG形式で書き込めませんでした: " + file.getPath()));
+          });
+    } catch (UncheckedIOException exception) {
+      throw exception.getCause();
     }
   }
 
@@ -350,11 +341,13 @@ public class ImageFileManager extends IFileManager {
     String fileName = file == null ? "" : file.getName();
     int dotIndex = fileName.lastIndexOf(".");
 
-    if (dotIndex <= 0 || dotIndex >= fileName.length() - 1) {
-      return "";
-    }
+    String[] extension = {""};
 
-    return fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT);
+    BoolEx.ifTrueElse(
+        dotIndex > 0 && dotIndex < fileName.length() - 1,
+        () -> extension[0] = fileName.substring(dotIndex + 1).toLowerCase(Locale.ROOT));
+
+    return extension[0];
   }
 
   /**
@@ -366,26 +359,27 @@ public class ImageFileManager extends IFileManager {
   private File correctOutputExtension(File file) {
     String fileName = file.getName();
     int dotIndex = fileName.lastIndexOf(".");
-    String baseName = fileName;
+    String[] baseName = {fileName};
 
-    if (dotIndex > 0) {
-      baseName = fileName.substring(0, dotIndex);
-    }
+    BoolEx.ifTrueElse(
+        dotIndex > 0,
+        () -> baseName[0] = fileName.substring(0, dotIndex));
 
-    String correctedName = baseName + "." + outputExtension;
+    String correctedName = baseName[0] + "." + outputExtension;
     File parentDirectory = file.getParentFile();
+    File[] correctedFile = {new File(correctedName)};
 
-    if (parentDirectory == null) {
-      return new File(correctedName);
-    }
+    BoolEx.ifTrueElse(
+        parentDirectory != null,
+        () -> correctedFile[0] = new File(parentDirectory, correctedName));
 
-    return new File(parentDirectory, correctedName);
+    return correctedFile[0];
   }
 
   /**
    * 画像として有効か確認する。
    *
-   * @param image 確認する画像
+   * @param image      確認する画像
    * @param targetName エラーメッセージへ含める対象名
    */
   private void validateImage(Image image, String targetName) {
@@ -393,28 +387,22 @@ public class ImageFileManager extends IFileManager {
         image == null,
         () -> {
           throw new IllegalArgumentException(
-              "画像がnullです: " + targetName
-          );
-        }
-    );
+              "画像がnullです: " + targetName);
+        });
 
     BoolEx.ifTrueElse(
         image.getWidth() <= 0 || image.getHeight() <= 0,
         () -> {
           throw new IllegalArgumentException(
-              "画像の幅または高さが0以下です: " + targetName
-          );
-        }
-    );
+              "画像の幅または高さが0以下です: " + targetName);
+        });
 
     BoolEx.ifTrueElse(
         image.isError(),
         () -> {
           throw new IllegalArgumentException(
-              "JavaFX Imageがエラー状態です: " + targetName
-          );
-        }
-    );
+              "JavaFX Imageがエラー状態です: " + targetName);
+        });
   }
 
   /**
@@ -427,10 +415,8 @@ public class ImageFileManager extends IFileManager {
         file.exists() && file.isDirectory(),
         () -> {
           throw new IllegalArgumentException(
-              "出力先がフォルダです: " + file.getPath()
-          );
-        }
-    );
+              "出力先がフォルダです: " + file.getPath());
+        });
 
     File parentDirectory = file.getAbsoluteFile().getParentFile();
 
@@ -438,28 +424,22 @@ public class ImageFileManager extends IFileManager {
         parentDirectory == null || !parentDirectory.exists(),
         () -> {
           throw new IllegalArgumentException(
-              "保存先フォルダが存在しません: " + file.getPath()
-          );
-        }
-    );
+              "保存先フォルダが存在しません: " + file.getPath());
+        });
 
     BoolEx.ifTrueElse(
         !parentDirectory.isDirectory(),
         () -> {
           throw new IllegalArgumentException(
-              "保存先がフォルダではありません: " + parentDirectory.getPath()
-          );
-        }
-    );
+              "保存先がフォルダではありません: " + parentDirectory.getPath());
+        });
 
     BoolEx.ifTrueElse(
         !parentDirectory.canWrite(),
         () -> {
           throw new IllegalArgumentException(
-              "保存先フォルダへ書き込めません: " + parentDirectory.getPath()
-          );
-        }
-    );
+              "保存先フォルダへ書き込めません: " + parentDirectory.getPath());
+        });
   }
 
 }

@@ -160,12 +160,11 @@ public class ImageWindowController extends WindowController {
   private Stage getShowingStage() {
     Stage[] showingStage = {new Stage()};
 
-    for (Window window : Window.getWindows()) {
-      BoolEx.ifTrueElse(
-          window instanceof Stage && window.isShowing(),
-          () -> showingStage[0] = (Stage) window
-      );
-    }
+    BoolEx.forEach(
+        Window.getWindows(),
+        window -> BoolEx.ifTrueElse(
+            window instanceof Stage && window.isShowing(),
+            () -> showingStage[0] = (Stage) window));
 
     return showingStage[0];
   }
