@@ -315,11 +315,9 @@ public class SignalFileManager {
             }
           });
     } catch (RuntimeException exception) {
-      BoolEx.ifTrueElse(
-          exception.getCause() instanceof IOException,
-          () -> {
-            throw new RuntimeException(exception.getCause());
-          });
+      if (exception.getCause() instanceof IOException) {
+        throw (IOException) exception.getCause();
+      });
 
       throw exception;
     }
@@ -416,11 +414,9 @@ public class SignalFileManager {
             }
           });
     } catch (RuntimeException exception) {
-      BoolEx.ifTrueElse(
-          exception.getCause() instanceof IOException,
-          () -> {
-            throw new RuntimeException(exception.getCause());
-          });
+      if (exception.getCause() instanceof IOException) {
+        throw (IOException) exception.getCause();
+      });
 
       throw exception;
     }
