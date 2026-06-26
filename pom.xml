@@ -74,6 +74,32 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
+        <configuration>
+          <argLine>-Djava.library.path=${project.basedir}/target/opencv</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${project.basedir}/target/opencv"/>
+                <unzip src="${settings.localRepository}/org/openpnp/opencv/4.9.0-0/opencv-4.9.0-0.jar" dest="${project.basedir}/target/opencv">
+                  <patternset>
+                    <include name="**/*.dylib"/>
+                  </patternset>
+                </unzip>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
