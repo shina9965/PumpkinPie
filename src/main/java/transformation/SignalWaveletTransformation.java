@@ -2,6 +2,8 @@ package transformation;
  
 import app.BoolEx;
 import waveletModel.SignalWaveletModel;
+import uiModel.SettingModel;
+import java.util.Arrays;
 
 /**
  * 信号向けウェーブレット変換の具象クラス
@@ -72,10 +74,72 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
         );
         double[] padded   = padding(original);
         double[] coefficients = decompose(padded);
+
+        // 設定画面で設定した採用率を取得する
+        int adoptionRate = SettingModel.getSystemAdoptionRate();
+        
+        // 採用率に応じて係数を残す
+        coefficients = filterCoefficients(coefficients, adoptionRate);
+
         signalWaveletModel.setTransformedSignal(coefficients);
         return signalWaveletModel;
     }
  
+    /**
+     * スケーリング係数はそのまま残し、
+     * ウェーブレット展開係数だけに採用率を適用する。
+     *
+     * @param coefficients ウェーブレット係数配列
+     * @param adoptionRate 採用率
+     * @return 採用率を適用したウェーブレット係数配列
+     */
+    private double[] filterCoefficients(double[] coefficients, int adoptionRate) {
+        double[] filtered = Arrays.copyOf(coefficients, coefficients.length);
+        int halfLength = coefficients.length / 2;
+
+        BoolEx.ifTrueElse(
+            adoptionRate >= 100,
+            () -> {},
+            () -> {
+                BoolEx.ifTrueElse(
+                    adoptionRate <= 0,
+                    () -> {
+
+                        for (int index = halfLength; index < filtered.length; index++) {
+                            filtered[index] = 0.0;
+                        }
+                    },
+                    () -> {
+                        int waveletLength = coefficients.length - halfLength;
+                        int keepCount = (int) Math.ceil(waveletLength * adoptionRate / 100.0);
+
+                        double[] absoluteValues = new double[waveletLength];
+
+                        for (int index = 0; index < waveletLength; index++) {
+                            absoluteValues[index] = Math.abs(coefficients[halfLength + index]);
+                        }
+
+                        Arrays.sort(absoluteValues);
+
+                        double threshold = absoluteValues[waveletLength - keepCount];
+
+                        for (int index = halfLength; index < filtered.length; index++) {
+                            int currentIndex = index;
+
+                            BoolEx.ifTrueElse(
+                                Math.abs(filtered[currentIndex]) < threshold,
+                                () -> filtered[currentIndex] = 0.0,
+                                () -> {}
+                            );
+                        }
+                    }
+                );
+            }
+        );
+
+        return filtered;
+    }
+
     /**
      * ウェーブレット逆変換を実行し、復元後のModelを返す
      * ・変換係数をreconstructで復元する
