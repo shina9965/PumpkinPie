@@ -8,6 +8,7 @@ import org.opencv.core.Mat;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.Graphics2D;
 
 public class RGB{
     //フィールド
@@ -18,9 +19,17 @@ public class RGB{
 
     //コンストラクタ
     public RGB(Image img){
+        if (img == null) {
+            throw new IllegalArgumentException("入力画像がありません。");
+        }
+
         BufferedImage buffered;
 
         buffered = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_3BYTE_BGR);
+
+        Graphics2D g = buffered.createGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
 
         this.image = new Mat(buffered.getHeight(), buffered.getWidth(),CvType.CV_8UC3);
         byte[] pixels = ((DataBufferByte) buffered.getRaster().getDataBuffer()).getData();
@@ -33,6 +42,14 @@ public class RGB{
     
 
     //メソッド
+
+    static {
+        System.load(
+            System.getProperty("user.dir")
+            + "/target/opencv/nu/pattern/opencv/osx/ARMv8/libopencv_java490.dylib"
+        );
+    }
+
     public void decomposeRGB(){
         List<Mat> channels = new ArrayList<>();
         Core.split(image,channels);
@@ -100,7 +117,7 @@ public class RGB{
     //分解されたチャネルをまた合成する
     public Mat mergedImage (Mat R, Mat G, Mat B){
         if (!R.size().equals(G.size()) || !R.size().equals(B.size())) {
-            throw new IllegalArgumentException("Channel sizes do not match");
+            throw new IllegalArgumentException("チャネルのサイズが合っていない");
         }
 
 
