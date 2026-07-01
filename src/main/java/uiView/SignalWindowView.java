@@ -163,7 +163,7 @@ public class SignalWindowView {
 
   // 編集用ウェーブレット展開係数表示パネルを更新する
   public void updateWaveletEditDisplay(double[] coefficient, int selectedIndex) {
-    drawSignal(waveletCoefficientEditPanel, coefficient, "ウェーブレット展開係数編集", true);
+    drawClickableSignal(waveletCoefficientEditPanel, coefficient, "ウェーブレット展開係数編集", true);
   }
 
   // 画面全体を更新する
@@ -223,6 +223,49 @@ public class SignalWindowView {
       pane.getChildren().add(point);
     }
   }
+  
+  private void drawClickableSignal(Pane pane, double[] values, String title, boolean editable) {
+  pane.getChildren().clear();
+
+  Label label = new Label(title);
+  label.setLayoutX(10);
+  label.setLayoutY(10);
+  label.setStyle("-fx-font-size: 16px;");
+  pane.getChildren().add(label);
+
+  double width = pane.getPrefWidth();
+  double height = pane.getPrefHeight();
+  double centerY = height / 2;
+
+  Line baseLine = new Line(10, centerY, width - 10, centerY);
+  pane.getChildren().add(baseLine);
+
+  if (values.length == 0) {
+    return;
+  }
+
+  double maxAbs = getMaxAbs(values);
+  double xStep = (width - 40) / Math.max(values.length - 1, 1);
+
+  for (int index = 0; index < values.length; index++) {
+    double x = 20 + index * xStep;
+    double y = centerY - values[index] / maxAbs * (height / 3);
+
+    Circle point = new Circle(x, y, 3);
+
+    int selectedIndex = index;
+    double selectedValue = values[index];
+
+    if (editable) {
+      point.setOnMouseClicked(event -> {
+        System.out.println("クリックされた点 index = " + selectedIndex);
+        System.out.println("値 = " + selectedValue);
+      });
+    }
+
+    pane.getChildren().add(point);
+  }
+}
 
   // 配列の中で絶対値が最大の値を求める
   private double getMaxAbs(double[] values) {
