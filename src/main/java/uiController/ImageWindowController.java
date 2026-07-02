@@ -1,35 +1,136 @@
 package uiController;
 
+import app.BoolEx;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import listener.StateChangeListener;
+import org.opencv.core.Mat;
+import uiModel.ImageWindowModel;
+import uiView.ImageWindowView;
 
-public class ImageWindowController extends WindowController{
+public class ImageWindowController extends WindowController {
 
+    private ImageWindowModel model;
+    private ImageWindowView view;
+    private Stage stage;
 
-  public ImageWindowController(StateChangeListener stateChangeListener, SettingController settingController) {
-    super(stateChangeListener, settingController);
-  }
+    public ImageWindowController(StateChangeListener stateChangeListener, SettingController settingController) {
+        super(stateChangeListener, settingController);
+        this.model = new ImageWindowModel();
+        this.view = new ImageWindowView(this);
+    }
 
-
+    @Override
     public void initState() {
-    System.out.println("ImageWindowController: initState");
-  }
+        this.stage = getShowingStage();
+        BoolEx.ifTrueElse(this.stage != null, () -> {
+            stage.setScene(view.createScene(model));
+            stage.show();
+            updateView();
+        });
+    }
 
-  public void endState() {
-    System.out.println("ImageWindowController: endState");
-  }
+    @Override
+    public void endState() {
+        // No specific cleanup needed
+    }
 
-  @Override
-  public void actionPerformed(javafx.event.ActionEvent event) {
-    System.out.println("ImageWindowController: actionPerformed");
-  }
+    @Override
+    public void actionPerformed(ActionEvent event) {
+        Object source = event.getSource();
+        
+        BoolEx.ifTrueElse(source instanceof Button, () -> {
+            Button btn = (Button) source;
+            String id = btn.getId();
+            BoolEx.ifTrueElse(id.equals(model.getLoadButtonData().id()), this::onLoadImage);
+            BoolEx.ifTrueElse(id.equals(model.getSaveButtonData().id()), this::onSaveImage);
+            BoolEx.ifTrueElse(id.equals(model.getReturnButtonData().id()), this::onReturn);
+        });
 
-  public void onReturn() {
-    System.out.println("ImageWindowController: onReturn");
-  }
+        BoolEx.ifTrueElse(source instanceof ToggleButton, () -> {
+            ToggleButton btn = (ToggleButton) source;
+            String id = btn.getId();
+            BoolEx.ifTrueElse(id.equals("MODE_NORMAL"), () -> model.setMode(ImageWindowModel.Mode.NORMAL));
+            BoolEx.ifTrueElse(id.equals("MODE_R"), () -> model.setMode(ImageWindowModel.Mode.R));
+            BoolEx.ifTrueElse(id.equals("MODE_G"), () -> model.setMode(ImageWindowModel.Mode.G));
+            BoolEx.ifTrueElse(id.equals("MODE_B"), () -> model.setMode(ImageWindowModel.Mode.B));
+            updateView();
+        });
+    }
 
-  public void onSetting() {
-    System.out.println("ImageWindowController: onSetting");
-  }
+    private void onLoadImage() {
+        try {
+            javafx.scene.image.Image img = model.getFileManager().importSelectedFile();
+            model.setOriginalImage(img);
+            updateView();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
-  
+    private void onSaveImage() {
+        try {
+            javafx.scene.image.Image img = model.getInverseImage();
+            model.getFileManager().exportSelectedFile(img);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void onReturn() {
+        stateChangeListener.changeWindowState(new HomeController(stateChangeListener, settingController, stage));
+    }
+
+    @Override
+    public void onSetting() {
+        // Not used here
+    }
+
+    public void handleImageClick(double x, double y, double width, double height, int type) {
+        javafx.scene.image.Image img = null;
+        if (type == 1) img = model.getLhImage();
+        if (type == 2) img = model.getHlImage();
+        if (type == 3) img = model.getHhImage();
+        
+        if (img == null) return;
+        
+        int arrayWidth = (int) img.getWidth();
+        int arrayHeight = (int) img.getHeight();
+        
+        int[] aX = { (int) ((x / width) * arrayWidth) };
+        int[] aY = { (int) ((y / height) * arrayHeight) };
+        
+        // Ensure within bounds
+        BoolEx.ifTrueElse(aX[0] < 0, () -> aX[0] = 0);
+        BoolEx.ifTrueElse(aX[0] >= arrayWidth, () -> aX[0] = arrayWidth - 1);
+        BoolEx.ifTrueElse(aY[0] < 0, () -> aY[0] = 0);
+        BoolEx.ifTrueElse(aY[0] >= arrayHeight, () -> aY[0] = arrayHeight - 1);
+        
+        model.toggleCoefficient(aX[0], aY[0], type);
+        updateView();
+    }
+
+    private void updateView() {
+        view.updateOriginalImage(model.getOriginalImage());
+        view.updateInverseImage(model.getInverseImage());
+        view.updateLlImage(model.getLlImage());
+        view.updateLhImage(model.getLhImage());
+        view.updateHlImage(model.getHlImage());
+        view.updateHhImage(model.getHhImage());
+    }
+
+    private Stage getShowingStage() {
+        Stage[] showingStage = {new Stage()};
+        for (Window window : Window.getWindows()) {
+            BoolEx.ifTrueElse(
+                window instanceof Stage && window.isShowing(),
+                () -> showingStage[0] = (Stage) window
+            );
+        }
+        return showingStage[0];
+    }
 }

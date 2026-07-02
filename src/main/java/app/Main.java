@@ -8,7 +8,7 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		nu.pattern.OpenCV.loadShared();
 		PumpkinPieApplication.main(args);
 	}
 
