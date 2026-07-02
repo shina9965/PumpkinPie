@@ -9,7 +9,8 @@ public class Graphs {
 
     // 係数画像（LL以外）を白黒で描画する（見やすいように正規化して白い線を描画）
     public Image createCoefficientImage(double[][] data) {
-        if (data == null || data.length == 0) return null;
+        javafx.scene.image.Image[] result = {null};
+        BoolEx.ifTrueElse(data != null && data.length > 0, () -> {
         int rows = data.length;
         int cols = data[0].length;
         WritableImage image = new WritableImage(cols, rows);
@@ -41,12 +42,15 @@ public class Graphs {
             y[0]++;
         });
 
-        return image;
+        result[0] = image;
+        });
+        return result[0];
     }
 
     // グレースケール画像を生成する（主に単一チャネルやLL成分など）
     public Image createGrayscaleImage(double[][] data) {
-        if (data == null || data.length == 0) return null;
+        javafx.scene.image.Image[] result = {null};
+        BoolEx.ifTrueElse(data != null && data.length > 0, () -> {
         int rows = data.length;
         int cols = data[0].length;
         WritableImage image = new WritableImage(cols, rows);
@@ -66,12 +70,15 @@ public class Graphs {
             y[0]++;
         });
 
-        return image;
+        result[0] = image;
+        });
+        return result[0];
     }
 
     // R, G, B の配列からカラー画像を生成する
     public Image createColorImage(double[][] rData, double[][] gData, double[][] bData) {
-        if (rData == null || rData.length == 0) return null;
+        javafx.scene.image.Image[] result = {null};
+        BoolEx.ifTrueElse(rData != null && rData.length > 0, () -> {
         int rows = rData.length;
         int cols = rData[0].length;
         WritableImage image = new WritableImage(cols, rows);
@@ -102,6 +109,8 @@ public class Graphs {
             y[0]++;
         });
 
-        return image;
+        result[0] = image;
+        });
+        return result[0];
     }
 }

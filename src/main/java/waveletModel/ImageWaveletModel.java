@@ -15,10 +15,10 @@ public class ImageWaveletModel extends WaveletModel {
     public double[][] getOriginalImage() { return originalImage; }
     public void setOriginalImage(double[][] originalImage) { 
         this.originalImage = originalImage;
-        if (originalImage != null) {
+        app.BoolEx.ifTrueElse(originalImage != null, () -> {
             this.originalRows = originalImage.length;
             this.originalCols = originalImage[0].length;
-        }
+        });
     }
 
     public double[][] getLl() { return ll; }
