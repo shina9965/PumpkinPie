@@ -14,6 +14,8 @@ import javafx.scene.shape.Line;
 import listener.ActionListener;
 import uiModel.SignalWindowModel;
 
+import app.BoolEx;
+
 public class SignalWindowView {
 
   // 画面全体の横幅
@@ -256,12 +258,12 @@ public class SignalWindowView {
     int selectedIndex = index;
     double selectedValue = values[index];
 
-    if (editable) {
+    BoolEx.ifTrueElse(editable, () -> {
       point.setOnMouseClicked(event -> {
         System.out.println("クリックされた点 index = " + selectedIndex);
         System.out.println("値 = " + selectedValue);
       });
-    }
+    });
 
     pane.getChildren().add(point);
   }
