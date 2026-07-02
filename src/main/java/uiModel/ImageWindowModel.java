@@ -77,26 +77,27 @@ public class ImageWindowModel {
     }
     
     private void toggleValue(ImageWaveletModel model, int x, int y, int type, String channel) {
-        double[][] target = null;
-        if (type == 1) target = model.getLh();
-        if (type == 2) target = model.getHl();
-        if (type == 3) target = model.getHh();
+        double[][][] targetWrapper = {null};
+        BoolEx.ifTrueElse(type == 1, () -> targetWrapper[0] = model.getLh());
+        BoolEx.ifTrueElse(type == 2, () -> targetWrapper[0] = model.getHl());
+        BoolEx.ifTrueElse(type == 3, () -> targetWrapper[0] = model.getHh());
         
-        if (target == null) return;
-        
-        String key = channel + "_" + type + "_" + x + "_" + y;
-        double val = target[y][x];
-        double[][] finalTarget = target;
-        
-        BoolEx.ifTrueElse(val != 0.0, () -> {
-            savedCoeffs.put(key, val);
-            finalTarget[y][x] = 0.0;
-        }, () -> {
-            Double orig = savedCoeffs.get(key);
-            if (orig != null) {
-                finalTarget[y][x] = orig;
-                savedCoeffs.remove(key);
-            }
+        BoolEx.ifTrueElse(targetWrapper[0] != null, () -> {
+            double[][] target = targetWrapper[0];
+            String key = channel + "_" + type + "_" + x + "_" + y;
+            double val = target[y][x];
+            double[][] finalTarget = target;
+            
+            BoolEx.ifTrueElse(val != 0.0, () -> {
+                savedCoeffs.put(key, val);
+                finalTarget[y][x] = 0.0;
+            }, () -> {
+                Double orig = savedCoeffs.get(key);
+                BoolEx.ifTrueElse(orig != null, () -> {
+                    finalTarget[y][x] = orig;
+                    savedCoeffs.remove(key);
+                });
+            });
         });
     }
 
@@ -106,15 +107,15 @@ public class ImageWindowModel {
             BoolEx.ifTrueElse(currentMode == Mode.NORMAL, 
                 () -> result[0] = graphs.createColorImage(rModel.getOriginalImage(), gModel.getOriginalImage(), bModel.getOriginalImage()),
                 () -> {
-                    Mat mat = null;
-                    if (currentMode == Mode.R) mat = rgbHelper.createRedImage(rgbHelper.doubleArrayToMat(rModel.getOriginalImage()));
-                    if (currentMode == Mode.G) mat = rgbHelper.createGreenImage(rgbHelper.doubleArrayToMat(gModel.getOriginalImage()));
-                    if (currentMode == Mode.B) mat = rgbHelper.createBlueImage(rgbHelper.doubleArrayToMat(bModel.getOriginalImage()));
+                    Mat[] matWrapper = {null};
+                    BoolEx.ifTrueElse(currentMode == Mode.R, () -> matWrapper[0] = rgbHelper.createRedImage(rgbHelper.doubleArrayToMat(rModel.getOriginalImage())));
+                    BoolEx.ifTrueElse(currentMode == Mode.G, () -> matWrapper[0] = rgbHelper.createGreenImage(rgbHelper.doubleArrayToMat(gModel.getOriginalImage())));
+                    BoolEx.ifTrueElse(currentMode == Mode.B, () -> matWrapper[0] = rgbHelper.createBlueImage(rgbHelper.doubleArrayToMat(bModel.getOriginalImage())));
                     
-                    if (mat != null) {
-                        java.awt.image.BufferedImage bImg = (java.awt.image.BufferedImage) rgbHelper.matToImage(mat);
+                    BoolEx.ifTrueElse(matWrapper[0] != null, () -> {
+                        java.awt.image.BufferedImage bImg = (java.awt.image.BufferedImage) rgbHelper.matToImage(matWrapper[0]);
                         result[0] = javafx.embed.swing.SwingFXUtils.toFXImage(bImg, null);
-                    }
+                    });
                 }
             );
         });
@@ -135,15 +136,15 @@ public class ImageWindowModel {
                     result[0] = javafx.embed.swing.SwingFXUtils.toFXImage(bImg, null);
                 },
                 () -> {
-                    Mat mat = null;
-                    if (currentMode == Mode.R) mat = rgbHelper.createRedImage(rgbHelper.doubleArrayToMat(rModel.getInverseImage()));
-                    if (currentMode == Mode.G) mat = rgbHelper.createGreenImage(rgbHelper.doubleArrayToMat(gModel.getInverseImage()));
-                    if (currentMode == Mode.B) mat = rgbHelper.createBlueImage(rgbHelper.doubleArrayToMat(bModel.getInverseImage()));
+                    Mat[] matWrapper = {null};
+                    BoolEx.ifTrueElse(currentMode == Mode.R, () -> matWrapper[0] = rgbHelper.createRedImage(rgbHelper.doubleArrayToMat(rModel.getInverseImage())));
+                    BoolEx.ifTrueElse(currentMode == Mode.G, () -> matWrapper[0] = rgbHelper.createGreenImage(rgbHelper.doubleArrayToMat(gModel.getInverseImage())));
+                    BoolEx.ifTrueElse(currentMode == Mode.B, () -> matWrapper[0] = rgbHelper.createBlueImage(rgbHelper.doubleArrayToMat(bModel.getInverseImage())));
                     
-                    if (mat != null) {
-                        java.awt.image.BufferedImage bImg = (java.awt.image.BufferedImage) rgbHelper.matToImage(mat);
+                    BoolEx.ifTrueElse(matWrapper[0] != null, () -> {
+                        java.awt.image.BufferedImage bImg = (java.awt.image.BufferedImage) rgbHelper.matToImage(matWrapper[0]);
                         result[0] = javafx.embed.swing.SwingFXUtils.toFXImage(bImg, null);
-                    }
+                    });
                 }
             );
         });
@@ -155,20 +156,21 @@ public class ImageWindowModel {
         BoolEx.ifTrueElse(currentMode == Mode.NORMAL, 
             () -> result[0] = getSingleChannelCoefficientImage(rModel, type),
             () -> {
-                if (currentMode == Mode.R) result[0] = getSingleChannelCoefficientImage(rModel, type);
-                if (currentMode == Mode.G) result[0] = getSingleChannelCoefficientImage(gModel, type);
-                if (currentMode == Mode.B) result[0] = getSingleChannelCoefficientImage(bModel, type);
+                BoolEx.ifTrueElse(currentMode == Mode.R, () -> result[0] = getSingleChannelCoefficientImage(rModel, type));
+                BoolEx.ifTrueElse(currentMode == Mode.G, () -> result[0] = getSingleChannelCoefficientImage(gModel, type));
+                BoolEx.ifTrueElse(currentMode == Mode.B, () -> result[0] = getSingleChannelCoefficientImage(bModel, type));
             }
         );
         return result[0];
     }
     
     private javafx.scene.image.Image getSingleChannelCoefficientImage(ImageWaveletModel model, int type) {
-        if (type == 0) return graphs.createGrayscaleImage(model.getLl());
-        if (type == 1) return graphs.createCoefficientImage(model.getLh());
-        if (type == 2) return graphs.createCoefficientImage(model.getHl());
-        if (type == 3) return graphs.createCoefficientImage(model.getHh());
-        return null;
+        javafx.scene.image.Image[] result = {null};
+        BoolEx.ifTrueElse(type == 0, () -> result[0] = graphs.createGrayscaleImage(model.getLl()));
+        BoolEx.ifTrueElse(type == 1, () -> result[0] = graphs.createCoefficientImage(model.getLh()));
+        BoolEx.ifTrueElse(type == 2, () -> result[0] = graphs.createCoefficientImage(model.getHl()));
+        BoolEx.ifTrueElse(type == 3, () -> result[0] = graphs.createCoefficientImage(model.getHh()));
+        return result[0];
     }
 
     public javafx.scene.image.Image getLlImage() { return getCoefficientImage(0); }

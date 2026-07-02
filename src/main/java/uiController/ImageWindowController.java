@@ -91,27 +91,29 @@ public class ImageWindowController extends WindowController {
     }
 
     public void handleImageClick(double x, double y, double width, double height, int type) {
-        javafx.scene.image.Image img = null;
-        if (type == 1) img = model.getLhImage();
-        if (type == 2) img = model.getHlImage();
-        if (type == 3) img = model.getHhImage();
+        javafx.scene.image.Image[] imgWrapper = {null};
+        BoolEx.ifTrueElse(type == 1, () -> imgWrapper[0] = model.getLhImage());
+        BoolEx.ifTrueElse(type == 2, () -> imgWrapper[0] = model.getHlImage());
+        BoolEx.ifTrueElse(type == 3, () -> imgWrapper[0] = model.getHhImage());
         
-        if (img == null) return;
+        BoolEx.ifTrueElse(imgWrapper[0] != null, () -> {
+            javafx.scene.image.Image img = imgWrapper[0];
         
-        int arrayWidth = (int) img.getWidth();
-        int arrayHeight = (int) img.getHeight();
-        
-        int[] aX = { (int) ((x / width) * arrayWidth) };
-        int[] aY = { (int) ((y / height) * arrayHeight) };
-        
-        // Ensure within bounds
-        BoolEx.ifTrueElse(aX[0] < 0, () -> aX[0] = 0);
-        BoolEx.ifTrueElse(aX[0] >= arrayWidth, () -> aX[0] = arrayWidth - 1);
-        BoolEx.ifTrueElse(aY[0] < 0, () -> aY[0] = 0);
-        BoolEx.ifTrueElse(aY[0] >= arrayHeight, () -> aY[0] = arrayHeight - 1);
-        
-        model.toggleCoefficient(aX[0], aY[0], type);
-        updateView();
+            int arrayWidth = (int) img.getWidth();
+            int arrayHeight = (int) img.getHeight();
+            
+            int[] aX = { (int) ((x / width) * arrayWidth) };
+            int[] aY = { (int) ((y / height) * arrayHeight) };
+            
+            // Ensure within bounds
+            BoolEx.ifTrueElse(aX[0] < 0, () -> aX[0] = 0);
+            BoolEx.ifTrueElse(aX[0] >= arrayWidth, () -> aX[0] = arrayWidth - 1);
+            BoolEx.ifTrueElse(aY[0] < 0, () -> aY[0] = 0);
+            BoolEx.ifTrueElse(aY[0] >= arrayHeight, () -> aY[0] = arrayHeight - 1);
+            
+            model.toggleCoefficient(aX[0], aY[0], type);
+            updateView();
+        });
     }
 
     private void updateView() {

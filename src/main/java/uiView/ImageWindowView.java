@@ -86,9 +86,10 @@ public class ImageWindowView {
     
     private void setupMouseEvents(ImageView imageView, int type) {
         imageView.setOnMouseClicked(event -> {
-            if (actionListener instanceof ImageWindowController controller) {
+            app.BoolEx.ifTrueElse(actionListener instanceof ImageWindowController, () -> {
+                ImageWindowController controller = (ImageWindowController) actionListener;
                 controller.handleImageClick(event.getX(), event.getY(), imageView.getBoundsInLocal().getWidth(), imageView.getBoundsInLocal().getHeight(), type);
-            }
+            });
         });
     }
 
