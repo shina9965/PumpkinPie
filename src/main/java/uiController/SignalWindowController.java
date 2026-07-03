@@ -96,10 +96,7 @@ public class SignalWindowController extends WindowController implements SignalCl
     );
   }
 
-  @Override
-  public void onSignalClick(int number) {
-    System.out.println("SignalWindowController: onSignalClick");
-  }
+  
 
   // 戻るボタンが押されたときにホーム画面へ戻る
   @Override
@@ -152,13 +149,18 @@ public class SignalWindowController extends WindowController implements SignalCl
     }  
   }
 
+
   // 係数がクリックされたときに係数の有効・無効を切り替える
+  @Override
   public void onEditCoefficient(int index) {
     System.out.println("SignalWindowController: onEditCoefficient");
+    System.out.println("変更前 = " + signalWindowModel.getEditedWaveletCoefficient()[index]);
 
-    
-    // マウス入力担当が実装する。
-    
+    signalWindowModel.toggleCoefficient(index);
+
+    System.out.println("変更後 = " + signalWindowModel.getEditedWaveletCoefficient()[index]);
+
+    updateView();
   }
 
   // ModelのデータをViewへ反映して画面を更新する

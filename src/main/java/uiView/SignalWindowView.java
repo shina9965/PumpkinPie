@@ -13,6 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import listener.ActionListener;
 import uiModel.SignalWindowModel;
+import listener.SignalClickListener;
 
 import app.BoolEx;
 
@@ -260,8 +261,11 @@ public class SignalWindowView {
 
     BoolEx.ifTrueElse(editable, () -> {
       point.setOnMouseClicked(event -> {
+        
+        var listener = (SignalClickListener) actionListener;
+        listener.onEditCoefficient(selectedIndex);
         System.out.println("クリックされた点 index = " + selectedIndex);
-        System.out.println("値 = " + selectedValue);
+        System.out.println("クリックされた点 value = " + selectedValue);
       });
     });
 
