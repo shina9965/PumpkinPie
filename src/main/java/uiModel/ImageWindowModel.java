@@ -1,12 +1,21 @@
 package uiModel;
 
+import app.BoolEx;
+import transformation.ImageWaveletTransformation;
 import javafx.scene.image.Image;
 import uiController.ButtonRecord;
+import waveletModel.ImageWaveletModel;
 
 public class ImageWindowModel {
 
   // 入力された画像を保持する
   private Image originalImage;
+
+  // 逆変換後の画像を保持する
+  private Image reconstructedImage;
+
+  // 画像用ウェーブレット変換を行うオブジェクト
+  private ImageWaveletTransformation imageWaveletTransformation;
 
   // 画像入力ボタンの表示文字とIDを保持する
   private final ButtonRecord inputImageButtonData =
@@ -23,6 +32,8 @@ public class ImageWindowModel {
   // Modelを初期化する
   public ImageWindowModel() {
     originalImage = null;
+    reconstructedImage = null;
+    imageWaveletTransformation = new ImageWaveletTransformation();
   }
 
   // 入力された画像を取得する
@@ -30,9 +41,38 @@ public class ImageWindowModel {
     return originalImage;
   }
 
+  // 逆変換後の画像を取得する
+  public Image getReconstructedImage() {
+    return reconstructedImage;
+  }
+
+  // 保存に使う画像を取得する
+  public Image getOutputImage() {
+    Image[] outputImage = {reconstructedImage};
+
+    BoolEx.ifTrueElse(
+        outputImage[0] == null,
+        () -> outputImage[0] = originalImage);
+
+    return outputImage[0];
+  }
+
   // 入力された画像を保持する
   public void setOriginalImage(Image image) {
     originalImage = image;
+    reconstructedImage = null;
+
+    BoolEx.ifTrueElse(
+        image != null,
+        () -> {
+          imageWaveletTransformation.changeWaveletImage(image);
+          imageWaveletTransformation.startWaveletTransformation();
+
+          ImageWaveletModel result =
+              imageWaveletTransformation.startInverseWaveletTransformation();
+
+          reconstructedImage = result.getReconstructedFxImage();
+        });
   }
 
   // 画像入力ボタンのデータを取得する

@@ -8,7 +8,7 @@ import transformation.SignalWaveletTransformation;
 class SignalWaveletTransformationTest {
 
     @Test
-    void changeWaveletDataで元信号をModelに設定できる() {
+    void changeWaveletDataSetsOriginalSignalOnModel() {
         SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
         double[] signal = {1.0, 2.0, 3.0};
@@ -22,7 +22,7 @@ class SignalWaveletTransformationTest {
     }
 
     @Test
-    void 偶数長の信号を変換できる() {
+    void transformsEvenLengthSignal() {
         SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
         transformation.changeWaveletData(new double[]{4.0, 2.0, 8.0, 6.0});
@@ -37,7 +37,7 @@ class SignalWaveletTransformationTest {
     }
 
     @Test
-    void 奇数長の信号はpaddingして変換できる() {
+    void padsAndTransformsOddLengthSignal() {
         SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
         transformation.changeWaveletData(new double[]{4.0, 2.0, 8.0});
@@ -53,7 +53,7 @@ class SignalWaveletTransformationTest {
     }
 
     @Test
-    void 偶数長の信号を変換して逆変換すると元に戻る() {
+    void restoresEvenLengthSignalAfterInverseTransform() {
         SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
         double[] original = {10.0, 6.0, 4.0, 2.0};
@@ -71,7 +71,7 @@ class SignalWaveletTransformationTest {
     }
 
     @Test
-    void 奇数長の信号を変換して逆変換するとpaddingが除去されて元に戻る() {
+    void removesPaddingForOddLengthSignalAfterInverseTransform() {
         SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
         double[] original = {10.0, 6.0, 4.0};
@@ -90,7 +90,7 @@ class SignalWaveletTransformationTest {
 
     
   @Test
-  void getSignalWaveletModelで同じModelを取得できる() {
+  void getSignalWaveletModelReturnsSameModel() {
     SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
     transformation.changeWaveletData(new double[]{1.0, 2.0});
@@ -102,7 +102,7 @@ class SignalWaveletTransformationTest {
   }
 
   @Test
-  void 入力が空の配列の場合例外を投げる() {
+  void rejectsEmptyInputSignal() {
     SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
     transformation.changeWaveletData(new double[]{});
@@ -114,7 +114,7 @@ class SignalWaveletTransformationTest {
   }
 
   @Test
-  void 入力が1要素の場合例外を投げる() {
+  void rejectsSingleElementInputSignal() {
     SignalWaveletTransformation transformation = new SignalWaveletTransformation();
 
     transformation.changeWaveletData(new double[]{1.0});

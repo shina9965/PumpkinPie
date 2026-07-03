@@ -132,7 +132,7 @@ public class ImageWindowController extends WindowController {
     System.out.println("ImageWindowController: onSaveImage");
 
     try {
-      Image image = imageWindowModel.getOriginalImage();
+      Image image = imageWindowModel.getOutputImage();
 
       BoolEx.ifTrueElse(
           image == null,

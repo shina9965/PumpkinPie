@@ -29,7 +29,7 @@ class ImageFileManagerTest {
   Path tempDirectory;
 
   @Test
-  void PNG画像を読み込める() throws IOException {
+  void importsPngImage() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File imageFile = createImageFile("sample.png", "png", 12, 8);
 
@@ -41,7 +41,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void JPG画像を読み込める() throws IOException {
+  void importsJpgImage() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File imageFile = createImageFile("sample.jpg", "jpg", 10, 7);
 
@@ -52,7 +52,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void JPEG画像を読み込める() throws IOException {
+  void importsJpegImage() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File imageFile = createImageFile("sample.jpeg", "jpeg", 9, 6);
 
@@ -63,7 +63,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 大文字拡張子のPNGを読み込める() throws IOException {
+  void importsPngImageWithUppercaseExtension() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File imageFile = createImageFile("sample.PNG", "png", 5, 4);
 
@@ -74,7 +74,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void JavaFXのImageをPNGとして出力できる() throws IOException {
+  void exportsJavaFxImageAsPng() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(11, 9);
     File outputFile = tempDirectory.resolve("result.png").toFile();
@@ -87,7 +87,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 出力したPNGを再度読み込める() throws IOException {
+  void importsExportedPng() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(13, 10);
     File outputFile = tempDirectory.resolve("reloaded.png").toFile();
@@ -100,7 +100,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 出力時にPNG拡張子が自動付与される() throws IOException {
+  void appendsPngExtensionOnExport() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(3, 2);
     File outputFileWithoutExtension =
@@ -112,7 +112,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 出力時に別拡張子はPNGへ置き換えられる() throws IOException {
+  void replacesDifferentExtensionWithPngOnExport() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(3, 2);
     File jpgOutputFile = tempDirectory.resolve("result.jpg").toFile();
@@ -124,7 +124,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void nullファイルは読み込めない() {
+  void rejectsNullFileOnImport() {
     ImageFileManager manager = new ImageFileManager();
 
     assertThrows(
@@ -134,7 +134,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 存在しないファイルは読み込めない() {
+  void rejectsMissingFileOnImport() {
     ImageFileManager manager = new ImageFileManager();
     File missingFile = tempDirectory.resolve("missing.png").toFile();
 
@@ -145,7 +145,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void フォルダを指定した場合は読み込めない() throws IOException {
+  void rejectsDirectoryOnImport() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Path directory = Files.createDirectory(tempDirectory.resolve("images.png"));
 
@@ -156,7 +156,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 非対応拡張子は読み込めない() throws IOException {
+  void rejectsUnsupportedExtensionOnImport() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File textFile = tempDirectory.resolve("sample.gif").toFile();
     Files.writeString(textFile.toPath(), "not image");
@@ -168,7 +168,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 中身が画像ではないPNGファイルは読み込めない() throws IOException {
+  void rejectsNonImagePngFile() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File invalidPngFile = tempDirectory.resolve("invalid.png").toFile();
     Files.writeString(invalidPngFile.toPath(), "not image");
@@ -180,7 +180,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 壊れたJPEGファイルは読み込めない() throws IOException {
+  void rejectsBrokenJpegFile() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     File invalidJpegFile = tempDirectory.resolve("broken.jpg").toFile();
     Files.write(invalidJpegFile.toPath(), new byte[] { 0x01, 0x02, 0x03 });
@@ -192,7 +192,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void null画像は出力できない() {
+  void rejectsNullImageOnExport() {
     ImageFileManager manager = new ImageFileManager();
     File outputFile = tempDirectory.resolve("result.png").toFile();
 
@@ -203,7 +203,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 存在しない保存先フォルダには出力できない() {
+  void rejectsMissingOutputDirectory() {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(2, 2);
     File outputFile =
@@ -216,7 +216,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void 書き込みできない保存先には出力できない() throws IOException {
+  void rejectsUnwritableOutputDirectory() throws IOException {
     ImageFileManager manager = new ImageFileManager();
     Image image = createFxImage(2, 2);
     File readOnlyDirectory =
@@ -238,7 +238,7 @@ class ImageFileManagerTest {
   }
 
   @Test
-  void isSupportedFileTypeは対応拡張子だけtrueを返す() {
+  void isSupportedFileTypeReturnsTrueOnlyForSupportedExtensions() {
     ImageFileManager manager = new ImageFileManager();
 
     assertTrue(manager.isSupportedFileType(new File("sample.png")));
