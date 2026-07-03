@@ -12,7 +12,9 @@ import listener.StateChangeListener;
 import uiModel.SignalWindowModel;
 import uiView.SignalWindowView;
 
-public class SignalWindowController extends WindowController {
+import listener.SignalClickListener;
+
+public class SignalWindowController extends WindowController implements SignalClickListener {
 
   // 信号変換表示画面を表示・更新するView
   private SignalWindowView signalWindowView;
@@ -92,6 +94,11 @@ public class SignalWindowController extends WindowController {
         },
         () -> System.out.println("Event source is not a Button")
     );
+  }
+
+  @Override
+  public void onSignalClick(int number) {
+    System.out.println("SignalWindowController: onSignalClick");
   }
 
   // 戻るボタンが押されたときにホーム画面へ戻る
