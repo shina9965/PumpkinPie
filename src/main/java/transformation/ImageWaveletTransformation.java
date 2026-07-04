@@ -2,6 +2,8 @@ package transformation;
 
 import app.BoolEx;
 import waveletModel.ImageWaveletModel;
+import java.util.Arrays;
+import uiModel.SettingModel;
 
 /**
  * 画像向けウェーブレット変換の具象クラス
@@ -71,8 +73,109 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         double[][] transposed = transpose(rowApplied);
         double[][] colApplied = transformRows(transposed);
         double[][] result     = transpose(colApplied);
+
+        // 設定画面で設定した採用率を取得する
+        int adoptionRate = SettingModel.getSystemAdoptionRate();
+
+        // 採用率に応じてウェーブレット展開係数を残す
+        result = filterCoefficients(result, adoptionRate);
         imageWaveletModel.setTransformedImage(result);
         return imageWaveletModel;
+    }
+
+    /**
+     * スケーリング係数はそのまま残し、
+     * ウェーブレット展開係数だけに採用率を適用する。
+     *
+     * @param coefficients ウェーブレット係数
+     * @param adoptionRate 採用率
+     * @return 採用率適用後の係数
+     */
+    private double[][] filterCoefficients(double[][] coefficients, int adoptionRate) {
+        int height = coefficients.length;
+        int width = coefficients[0].length;
+
+        double[][] filtered = new double[height][width];
+
+        int[] row = {0};
+        BoolEx.forTrue(0, height, () -> {
+            System.arraycopy(coefficients[row[0]], 0, filtered[row[0]], 0, width);
+            row[0]++;
+        });
+
+        int halfHeight = height / 2;
+        int halfWidth = width / 2;
+
+        BoolEx.ifTrueElse(
+            adoptionRate >= 100,
+            () -> {},
+            () -> {
+                BoolEx.ifTrueElse(
+                    adoptionRate <= 0,
+                    () -> {
+                        int[] r = {0};
+                        BoolEx.forTrue(0, height, () -> {
+                            int[] c = {0};
+                            BoolEx.forTrue(0, width, () -> {
+                                BoolEx.ifTrueElse(
+                                    r[0] >= halfHeight || c[0] >= halfWidth,
+                                    () -> filtered[r[0]][c[0]] = 0.0
+                                );
+                                c[0]++;
+                            });
+                            r[0]++;
+                        });
+                    },
+                    () -> {
+                        int coefficientCount = 3 * halfHeight * halfWidth;
+                        int keepCount = (int) Math.ceil(coefficientCount * adoptionRate / 100.0);
+
+                        double[] absoluteValues = new double[coefficientCount];
+                        int[] index = {0};
+
+                        int[] r = {0};
+                        BoolEx.forTrue(0, height, () -> {
+                            int[] c = {0};
+                            BoolEx.forTrue(0, width, () -> {
+                                BoolEx.ifTrueElse(
+                                    r[0] >= halfHeight || c[0] >= halfWidth,
+                                    () -> {
+                                        absoluteValues[index[0]] = Math.abs(filtered[r[0]][c[0]]);
+                                        index[0]++;
+                                    }
+                                );
+                                c[0]++;
+                            });
+                            r[0]++;
+                        });
+
+                        Arrays.sort(absoluteValues);
+
+                        double threshold = absoluteValues[coefficientCount - keepCount];
+
+                        r[0] = 0;
+                        BoolEx.forTrue(0, height, () -> {
+                            int[] c = {0};
+                            BoolEx.forTrue(0, width, () -> {
+                                int currentRow = r[0];
+                                int currentCol = c[0];
+
+                                BoolEx.ifTrueElse(
+                                    currentRow >= halfHeight || currentCol >= halfWidth,
+                                    () -> BoolEx.ifTrueElse(
+                                        Math.abs(filtered[currentRow][currentCol]) < threshold,
+                                        () -> filtered[currentRow][currentCol] = 0.0
+                                    )
+                                );
+                                c[0]++;
+                            });
+                            r[0]++;
+                        });
+                    }
+                );
+            }
+        );
+        return filtered;
     }
 
     /**
