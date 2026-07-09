@@ -2,6 +2,7 @@ package transformation;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -9,6 +10,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.Graphics2D;
+
+import app.BoolEx;
 
 public class RGB{
     //フィールド
@@ -51,12 +54,22 @@ public class RGB{
     }
 
     public void decomposeRGB(){
+        BoolEx.ifTrueElse(
+            image == null || image.empty(),
+            () -> { throw new IllegalArgumentException("入力画像がありません"); },
+            () -> {}
+        );
+
         List<Mat> channels = new ArrayList<>();
-        Core.split(image,channels);
+        Core.split(image, channels);
+
+        if (channels.size() < 3) {
+            throw new IllegalArgumentException("入力画像のチャネル数は3ではない");
+        }
+
         this.B = channels.get(0);
         this.G = channels.get(1);
         this.R = channels.get(2);
-         
     }                                        //imageを分解し、リストたちに値を代入
 
     public Mat getImage(){
