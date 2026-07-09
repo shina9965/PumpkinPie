@@ -12,7 +12,9 @@ import listener.StateChangeListener;
 import uiModel.SignalWindowModel;
 import uiView.SignalWindowView;
 
-public class SignalWindowController extends WindowController {
+import listener.SignalClickListener;
+
+public class SignalWindowController extends WindowController implements SignalClickListener {
 
   // 信号変換表示画面を表示・更新するView
   private SignalWindowView signalWindowView;
@@ -94,6 +96,8 @@ public class SignalWindowController extends WindowController {
     );
   }
 
+  
+
   // 戻るボタンが押されたときにホーム画面へ戻る
   @Override
   public void onReturn() {
@@ -145,13 +149,18 @@ public class SignalWindowController extends WindowController {
     }  
   }
 
+
   // 係数がクリックされたときに係数の有効・無効を切り替える
+  @Override
   public void onEditCoefficient(int index) {
     System.out.println("SignalWindowController: onEditCoefficient");
+    System.out.println("変更前 = " + signalWindowModel.getEditedWaveletCoefficient()[index]);
 
-    
-    // マウス入力担当が実装する。
-    
+    signalWindowModel.toggleCoefficient(index);
+
+    System.out.println("変更後 = " + signalWindowModel.getEditedWaveletCoefficient()[index]);
+
+    updateView();
   }
 
   // ModelのデータをViewへ反映して画面を更新する

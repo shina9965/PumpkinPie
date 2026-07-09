@@ -3,16 +3,16 @@ package transformation;
 import waveletModel.WaveletModel;
 import app.BoolEx;
 
-public abstract class WaveletTransformation<T extends WaveletModel> {
+public abstract class WaveletTransformation<T1 extends WaveletModel, D> { //changeWaveletDataのための変更有(ジェネリクス化)
     // ウェーブレット変換を開始する抽象メソッド
-    public abstract T startWaveletTransformation();
+    public abstract T1 startWaveletTransformation();
  
     //ウェーブレット逆変換を開始する抽象メソッド
-    public abstract T startInverseWaveletTransformation();
+    public abstract T1 startInverseWaveletTransformation();
  
     // ウェーブレットデータを更新する抽象メソッド
     // @param value 新しいデータ
-    public abstract void changeWaveletData(double[] value);
+    public abstract void changeWaveletData(D value); 
  
 
     // ===== 共通で使うウェーブレット変換処理部分 =====
