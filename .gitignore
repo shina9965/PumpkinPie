@@ -1,0 +1,37 @@
+# Maven
+target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+
+# VSCode
+.vscode/
+!.vscode/extensions.json
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Build tools
+.gradle/
+build/
+bin/
+
+# IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
