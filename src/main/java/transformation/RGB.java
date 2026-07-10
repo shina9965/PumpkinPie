@@ -12,6 +12,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.Graphics2D;
 
 import app.BoolEx;
+import nu.pattern.OpenCV;
 
 public class RGB{
     //フィールド
@@ -47,10 +48,7 @@ public class RGB{
     //メソッド
 
     static {
-        System.load(
-            System.getProperty("user.dir")
-            + "/target/opencv/nu/pattern/opencv/osx/ARMv8/libopencv_java490.dylib"
-        );
+     OpenCV.loadLocally();
     }
 
     public void decomposeRGB(){

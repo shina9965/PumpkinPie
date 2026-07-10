@@ -3,7 +3,6 @@ package uiModel;
 import app.BoolEx;
 import app.Graphs;
 import fileManager.ImageFileManager;
-import javafx.scene.image.Image;
 import org.opencv.core.Mat;
 import transformation.ImageWaveletTransformation;
 import waveletModel.ImageWaveletModel;
@@ -19,6 +18,10 @@ public class ImageWindowModel {
     private ImageWaveletModel rModel = new ImageWaveletModel();
     private ImageWaveletModel gModel = new ImageWaveletModel();
     private ImageWaveletModel bModel = new ImageWaveletModel();
+
+    private ImageWaveletTransformation rTransformation;
+    private ImageWaveletTransformation gTransformation;
+    private ImageWaveletTransformation bTransformation;
     
     private RGB rgbHelper;
     
@@ -56,17 +59,21 @@ public class ImageWindowModel {
         
         savedCoeffs.clear();
         
-        new ImageWaveletTransformation(bModel).startWaveletTransformation();
-        new ImageWaveletTransformation(gModel).startWaveletTransformation();
-        new ImageWaveletTransformation(rModel).startWaveletTransformation();
+        this.bTransformation = new ImageWaveletTransformation(bModel);
+        this.gTransformation = new ImageWaveletTransformation(gModel);
+        this.rTransformation = new ImageWaveletTransformation(rModel);
+        
+        bTransformation.startWaveletTransformation();
+        gTransformation.startWaveletTransformation();
+        rTransformation.startWaveletTransformation();
         
         inverseTransformAll();
     }
     
     private void inverseTransformAll() {
-        new ImageWaveletTransformation(bModel).startInverseWaveletTransformation();
-        new ImageWaveletTransformation(gModel).startInverseWaveletTransformation();
-        new ImageWaveletTransformation(rModel).startInverseWaveletTransformation();
+        bTransformation.startInverseWaveletTransformation();
+        gTransformation.startInverseWaveletTransformation();
+        rTransformation.startInverseWaveletTransformation();
     }
 
     public void toggleCoefficient(int x, int y, int type) {

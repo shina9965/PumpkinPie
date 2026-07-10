@@ -7,7 +7,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import listener.StateChangeListener;
-import org.opencv.core.Mat;
 import uiModel.ImageWindowModel;
 import uiView.ImageWindowView;
 
@@ -135,4 +134,5 @@ public class ImageWindowController extends WindowController {
         }
         return showingStage[0];
     }
+    
 }
