@@ -3,7 +3,6 @@ package uiModel;
 import app.BoolEx;
 import app.Graphs;
 import fileManager.ImageFileManager;
-import javafx.scene.image.Image;
 import org.opencv.core.Mat;
 import transformation.ImageWaveletTransformation;
 import waveletModel.ImageWaveletModel;
@@ -19,6 +18,10 @@ public class ImageWindowModel {
     private ImageWaveletModel rModel = new ImageWaveletModel();
     private ImageWaveletModel gModel = new ImageWaveletModel();
     private ImageWaveletModel bModel = new ImageWaveletModel();
+
+    private ImageWaveletTransformation rTransformation;
+    private ImageWaveletTransformation gTransformation;
+    private ImageWaveletTransformation bTransformation;
     
     private RGB rgbHelper;
     
@@ -56,17 +59,21 @@ public class ImageWindowModel {
         
         savedCoeffs.clear();
         
-        new ImageWaveletTransformation(bModel).startWaveletTransformation();
-        new ImageWaveletTransformation(gModel).startWaveletTransformation();
-        new ImageWaveletTransformation(rModel).startWaveletTransformation();
+        this.bTransformation = new ImageWaveletTransformation(bModel);
+        this.gTransformation = new ImageWaveletTransformation(gModel);
+        this.rTransformation = new ImageWaveletTransformation(rModel);
+        
+        bTransformation.startWaveletTransformation();
+        gTransformation.startWaveletTransformation();
+        rTransformation.startWaveletTransformation();
         
         inverseTransformAll();
     }
     
     private void inverseTransformAll() {
-        new ImageWaveletTransformation(bModel).startInverseWaveletTransformation();
-        new ImageWaveletTransformation(gModel).startInverseWaveletTransformation();
-        new ImageWaveletTransformation(rModel).startInverseWaveletTransformation();
+        bTransformation.startInverseWaveletTransformation();
+        gTransformation.startInverseWaveletTransformation();
+        rTransformation.startInverseWaveletTransformation();
     }
 
     public void toggleCoefficient(int x, int y, int type) {
@@ -76,29 +83,67 @@ public class ImageWindowModel {
         inverseTransformAll();
     }
     
-    private void toggleValue(ImageWaveletModel model, int x, int y, int type, String channel) {
-        double[][][] targetWrapper = {null};
-        BoolEx.ifTrueElse(type == 1, () -> targetWrapper[0] = model.getLh());
-        BoolEx.ifTrueElse(type == 2, () -> targetWrapper[0] = model.getHl());
-        BoolEx.ifTrueElse(type == 3, () -> targetWrapper[0] = model.getHh());
-        
-        BoolEx.ifTrueElse(targetWrapper[0] != null, () -> {
-            double[][] target = targetWrapper[0];
-            String key = channel + "_" + type + "_" + x + "_" + y;
-            double val = target[y][x];
-            double[][] finalTarget = target;
-            
-            BoolEx.ifTrueElse(val != 0.0, () -> {
-                savedCoeffs.put(key, val);
-                finalTarget[y][x] = 0.0;
-            }, () -> {
-                Double orig = savedCoeffs.get(key);
-                BoolEx.ifTrueElse(orig != null, () -> {
-                    finalTarget[y][x] = orig;
-                    savedCoeffs.remove(key);
+    private void toggleValue(
+        ImageWaveletModel model,
+        int x,
+        int y,
+        int type,
+        String channel
+    ) {
+        double[][] transformed = model.getTransformedImage();
+
+        BoolEx.ifTrueElse(
+            transformed != null
+                && transformed.length > 0
+                && transformed[0].length > 0,
+            () -> {
+                int halfHeight = transformed.length / 2;
+                int halfWidth = transformed[0].length / 2;
+
+                int[] actualX = {x};
+                int[] actualY = {y};
+
+                // LH：右上
+                BoolEx.ifTrueElse(type == 1, () -> {
+                    actualX[0] += halfWidth;
                 });
-            });
-        });
+
+                // HL：左下
+                BoolEx.ifTrueElse(type == 2, () -> {
+                    actualY[0] += halfHeight;
+                });
+
+                // HH：右下
+                BoolEx.ifTrueElse(type == 3, () -> {
+                    actualX[0] += halfWidth;
+                    actualY[0] += halfHeight;
+                });
+
+                boolean inBounds =
+                    actualY[0] >= 0
+                    && actualY[0] < transformed.length
+                    && actualX[0] >= 0
+                    && actualX[0] < transformed[0].length;
+
+                BoolEx.ifTrueElse(inBounds, () -> {
+                    String key =
+                        channel + "_" + type + "_" + x + "_" + y;
+
+                    double value =
+                        transformed[actualY[0]][actualX[0]];
+
+                    BoolEx.ifTrueElse(
+                        value != 0.0,
+                        () -> {
+                            savedCoeffs.put(key, value);
+                            transformed[actualY[0]][actualX[0]] = 0.0;
+                        }
+                    );
+
+                    model.setTransformedImage(transformed);
+                });
+            }
+        );
     }
 
     public javafx.scene.image.Image getOriginalImage() {

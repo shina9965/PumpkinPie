@@ -20,8 +20,8 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
     /**
      * ImageWaveletModelをここでnewし、インスタンスを初期化する
      */
-    public ImageWaveletTransformation() {
-        this.imageWaveletModel = new ImageWaveletModel();
+    public ImageWaveletTransformation(ImageWaveletModel model) {
+        this.imageWaveletModel = model;
     }
 
     // ===== WaveletTransformation オーバーライド =====

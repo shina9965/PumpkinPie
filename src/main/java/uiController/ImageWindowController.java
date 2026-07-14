@@ -7,11 +7,11 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import listener.StateChangeListener;
-import org.opencv.core.Mat;
 import uiModel.ImageWindowModel;
 import uiView.ImageWindowView;
+import listener.ImageClickListener;
 
-public class ImageWindowController extends WindowController {
+public class ImageWindowController extends WindowController implements ImageClickListener {
 
     private ImageWindowModel model;
     private ImageWindowView view;
@@ -91,6 +91,12 @@ public class ImageWindowController extends WindowController {
     }
 
     public void handleImageClick(double x, double y, double width, double height, int type) {
+
+        System.out.println("handleImageClick実行");
+        System.out.println("クリック座標: x=" + x + ", y=" + y);
+        System.out.println("ImageView: width=" + width + ", height=" + height);
+        System.out.println("type=" + type);
+
         javafx.scene.image.Image[] imgWrapper = {null};
         BoolEx.ifTrueElse(type == 1, () -> imgWrapper[0] = model.getLhImage());
         BoolEx.ifTrueElse(type == 2, () -> imgWrapper[0] = model.getHlImage());
@@ -135,4 +141,5 @@ public class ImageWindowController extends WindowController {
         }
         return showingStage[0];
     }
+    
 }

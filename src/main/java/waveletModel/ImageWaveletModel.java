@@ -1,10 +1,6 @@
 package waveletModel;
 
-import java.awt.Image;
-import java.io.File;
-import app.BoolEx;
-import fileManager.ImageFileManager;
-import transformation.RGB;
+
 
 /**
  * 画像ウェーブレット変換に使用するデータモデル
@@ -26,56 +22,17 @@ public class ImageWaveletModel extends WaveletModel {
 
     /** padding前の縦幅（縦方向の画素数が奇数の場合に使用） */
     private int originalHeight;
-
-    /** 画像ファイル管理 */
-    private final ImageFileManager imageFileManager;
-
-    private RGB rgb;
-
     // ===== コンストラクタ =====
 
     /**
      * ImageWaveletModelを初期化する
      */
     public ImageWaveletModel() {
-        this.imageFileManager   = new ImageFileManager();
         this.originalImage      = new double[0][0];
         this.transformedImage   = new double[0][0];
         this.reconstructedImage = new double[0][0];
         this.originalWidth      = 0;
         this.originalHeight     = 0;
-    }
-
-    // ===== ファイルI/O =====
-
-    /**
-     * ImageFileManagerを使って画像をファイルから読み込み、originalImageへ保存する
-     * 画像サイズを originalWidth / originalHeight に保存する
-     *
-     * @param path 読み込む画像ファイルのパス
-     */
-    public void loadImage(String path) {
-        File file           = new File(path);
-        Image image         = imageFileManager.importFile(file);
-        this.rgb            = new RGB(image);
-        this.originalImage  = rgb.matToDoubleArray(rgb.getImage());
-        this.originalHeight = originalImage.length;
-        this.originalWidth  = originalImage[0].length;
-    }
-
-    /**
-     * 復元画像または変換係数をファイルへ保存する
-     * reconstructedImage が存在する場合はそちらを、なければ transformedImage を保存する
-     *
-     * @param file 保存先ファイル
-     */
-    public void saveImage(File file) {
-        boolean hasReconstructed = reconstructedImage != null && reconstructedImage.length > 0;
-        BoolEx.ifTrueElse(
-            hasReconstructed,
-            () -> imageFileManager.exportFile(file, rgb.matToImage(rgb.doubleArrayToMat(reconstructedImage))),
-            () -> imageFileManager.exportFile(file, rgb.matToImage(rgb.doubleArrayToMat(transformedImage)))
-        );
     }
 
     // ===== Getter / Setter =====
@@ -152,5 +109,91 @@ public class ImageWaveletModel extends WaveletModel {
      */
     public int getOriginalHeight() {
         return originalHeight;
+    }
+
+        public double[][] getLl() {
+        return extractCoefficientArea(0, 0);
+    }
+
+    /**
+     * 右上のLH係数を取得する。
+     *
+     * @return LH係数
+     */
+    public double[][] getLh() {
+        return extractCoefficientArea(0, 1);
+    }
+
+    /**
+     * 左下のHL係数を取得する。
+     *
+     * @return HL係数
+     */
+    public double[][] getHl() {
+        return extractCoefficientArea(1, 0);
+    }
+
+    /**
+     * 右下のHH係数を取得する。
+     *
+     * @return HH係数
+     */
+    public double[][] getHh() {
+        return extractCoefficientArea(1, 1);
+    }
+
+    /**
+     * transformedImageから指定された係数領域を切り出す。
+     *
+     * rowArea:
+     * 0 = 上半分
+     * 1 = 下半分
+     *
+     * colArea:
+     * 0 = 左半分
+     * 1 = 右半分
+     *
+     * @param rowArea 上側または下側
+     * @param colArea 左側または右側
+     * @return 切り出した係数領域
+     */
+    private double[][] extractCoefficientArea(
+            int rowArea,
+            int colArea) {
+
+        if (transformedImage == null
+                || transformedImage.length == 0
+                || transformedImage[0].length == 0) {
+
+            return new double[0][0];
+        }
+
+        int height = transformedImage.length;
+        int width = transformedImage[0].length;
+
+        int halfHeight = height / 2;
+        int halfWidth = width / 2;
+
+        int startRow = rowArea * halfHeight;
+        int startCol = colArea * halfWidth;
+
+        double[][] result =
+            new double[halfHeight][halfWidth];
+
+        for (int row = 0; row < halfHeight; row++) {
+            System.arraycopy(
+                transformedImage[startRow + row],
+                startCol,
+                result[row],
+                0,
+                halfWidth
+            );
+        }
+
+        return result;
+    }
+
+    public double[][] getInverseImage() {
+        return reconstructedImage;
     }
 }

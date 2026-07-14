@@ -1,5 +1,8 @@
 package uiView;
 
+import app.BoolEx;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,6 +19,8 @@ import javafx.scene.layout.Pane;
 import listener.ActionListener;
 import uiController.ImageWindowController;
 import uiModel.ImageWindowModel;
+import javafx.util.Duration;
+import listener.ImageClickListener;
 
 public class ImageWindowView {
 
@@ -85,12 +90,72 @@ public class ImageWindowView {
     }
     
     private void setupMouseEvents(ImageView imageView, int type) {
-        imageView.setOnMouseClicked(event -> {
-            app.BoolEx.ifTrueElse(actionListener instanceof ImageWindowController, () -> {
-                ImageWindowController controller = (ImageWindowController) actionListener;
-                controller.handleImageClick(event.getX(), event.getY(), imageView.getBoundsInLocal().getWidth(), imageView.getBoundsInLocal().getHeight(), type);
-            });
+        double[] mouseX = {0};
+        double[] mouseY = {0};
+
+        Timeline holdTimeline = new Timeline(
+            new KeyFrame(
+                Duration.millis(100),
+                event -> executeImageClick(
+                    imageView,
+                    type,
+                    mouseX[0],
+                    mouseY[0]
+                )
+            )
+        );
+
+        holdTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        imageView.setOnMousePressed(event -> {
+            mouseX[0] = event.getX();
+            mouseY[0] = event.getY();
+
+            executeImageClick(
+                imageView,
+                type,
+                mouseX[0],
+                mouseY[0]
+            );
+
+            holdTimeline.playFromStart();
         });
+
+        imageView.setOnMouseDragged(event -> {
+            mouseX[0] = event.getX();
+            mouseY[0] = event.getY();
+        });
+
+        imageView.setOnMouseReleased(event -> {
+            holdTimeline.stop();
+        });
+
+        imageView.setOnMouseExited(event -> {
+            holdTimeline.stop();
+        });
+    }
+
+    private void executeImageClick(
+            ImageView imageView,
+            int type,
+            double x,
+            double y
+    ) {
+        BoolEx.ifTrueElse(
+            actionListener instanceof ImageClickListener,
+            () -> {
+                ImageClickListener controller =
+                    (ImageClickListener) actionListener;
+
+                controller.handleImageClick(
+                    x,
+                    y,
+                    imageView.getBoundsInLocal().getWidth(),
+                    imageView.getBoundsInLocal().getHeight(),
+                    type
+                );
+            }
+        );
     }
 
     public HBox createButtons(ImageWindowModel model) {

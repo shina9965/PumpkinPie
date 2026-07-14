@@ -1,6 +1,6 @@
 package listener;
 
 public interface ImageClickListener {
-    void onImageClick(int x, int y);
+    void handleImageClick(double x, double y, double width, double height, int type);
     
 }
