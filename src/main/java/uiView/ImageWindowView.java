@@ -20,6 +20,7 @@ import listener.ActionListener;
 import uiController.ImageWindowController;
 import uiModel.ImageWindowModel;
 import javafx.util.Duration;
+import listener.ImageClickListener;
 
 public class ImageWindowView {
 
@@ -141,10 +142,10 @@ public class ImageWindowView {
             double y
     ) {
         BoolEx.ifTrueElse(
-            actionListener instanceof ImageWindowController,
+            actionListener instanceof ImageClickListener,
             () -> {
-                ImageWindowController controller =
-                    (ImageWindowController) actionListener;
+                ImageClickListener controller =
+                    (ImageClickListener) actionListener;
 
                 controller.handleImageClick(
                     x,
