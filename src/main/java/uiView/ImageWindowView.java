@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import listener.ActionListener;
+import listener.ImageClickListener;
 import uiController.ImageWindowController;
 import uiModel.ImageWindowModel;
 
@@ -86,8 +87,8 @@ public class ImageWindowView {
     
     private void setupMouseEvents(ImageView imageView, int type) {
         imageView.setOnMouseClicked(event -> {
-            app.BoolEx.ifTrueElse(actionListener instanceof ImageWindowController, () -> {
-                ImageWindowController controller = (ImageWindowController) actionListener;
+            app.BoolEx.ifTrueElse(actionListener instanceof ImageClickListener, () -> {
+                ImageClickListener controller = (ImageClickListener) actionListener;
                 controller.handleImageClick(event.getX(), event.getY(), imageView.getBoundsInLocal().getWidth(), imageView.getBoundsInLocal().getHeight(), type);
             });
         });

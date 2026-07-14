@@ -9,8 +9,9 @@ import javafx.stage.Window;
 import listener.StateChangeListener;
 import uiModel.ImageWindowModel;
 import uiView.ImageWindowView;
+import listener.ImageClickListener;
 
-public class ImageWindowController extends WindowController {
+public class ImageWindowController extends WindowController implements ImageClickListener {
 
     private ImageWindowModel model;
     private ImageWindowView view;
