@@ -108,7 +108,7 @@ public class ImageWindowView {
         HBox modeBox = new HBox(10, new Label("モード: "), normalMode, rMode, gMode, bMode);
         modeBox.setAlignment(Pos.CENTER);
 
-        HBox leftButtons = new HBox(30, loadButton, saveButton, modeBox);
+        HBox leftButtons = new HBox(30, saveButton, loadButton, modeBox);
         HBox rightButtons = new HBox(returnButton);
 
         HBox buttonBox = new HBox(300);
