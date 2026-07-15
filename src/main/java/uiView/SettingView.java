@@ -75,11 +75,11 @@ public class SettingView {
 
         applyButton.setPrefWidth(100);
         resetButton.setPrefWidth(100);
-        backButton.setPrefWidth(120);
+        exitButton.setPrefWidth(120);
         creditButton.setPrefWidth(120);
 
-        exitButton.setPrefWidth(220);
-        exitButton.setPrefHeight(60);
+        backButton.setPrefWidth(220);
+        backButton.setPrefHeight(60);
     }
 
     public void layoutComponents() {
@@ -108,20 +108,24 @@ public class SettingView {
         HBox creditArea = new HBox(creditButton);
         creditArea.setAlignment(Pos.CENTER_RIGHT);
 
-        HBox backArea = new HBox(backButton);
-        backArea.setAlignment(Pos.CENTER_RIGHT);
+        HBox exitArea = new HBox(exitButton);
+        exitArea.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox rightArea = new VBox(15, creditArea, applyResetArea, backArea);
+        // 「アプリを終了」だけ30px下へ移動
+        exitArea.setTranslateY(30);
+
+
+        VBox rightArea = new VBox(15, creditArea, applyResetArea, exitArea);
         rightArea.setAlignment(Pos.CENTER_RIGHT);
 
         HBox centerArea = new HBox(30, rateArea, rightArea);
         centerArea.setAlignment(Pos.CENTER);
 
-        HBox exitArea = new HBox(exitButton);
-        exitArea.setAlignment(Pos.CENTER);
-        exitArea.setPadding(new Insets(40, 0, 0, 0));
+        HBox backArea = new HBox(backButton);
+        backArea.setAlignment(Pos.CENTER);
+        backArea.setPadding(new Insets(40, 0, 0, 0));
 
-        VBox mainArea = new VBox(30, centerArea, exitArea);
+        VBox mainArea = new VBox(30, centerArea, backArea);
         mainArea.setAlignment(Pos.CENTER);
 
         root.setTop(titleArea);
