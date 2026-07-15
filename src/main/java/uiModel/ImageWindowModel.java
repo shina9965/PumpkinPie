@@ -33,8 +33,8 @@ public class ImageWindowModel {
     private Map<String, Double> savedCoeffs = new HashMap<>();
 
     public record ButtonData(String text, String id) {}
-    private ButtonData loadButtonData = new ButtonData("画像を読み込む", "LOAD_IMAGE");
-    private ButtonData saveButtonData = new ButtonData("画像を保存", "SAVE_IMAGE");
+    private ButtonData loadButtonData = new ButtonData("画像読込", "LOAD_IMAGE");
+    private ButtonData saveButtonData = new ButtonData("画像保存", "SAVE_IMAGE");
     private ButtonData returnButtonData = new ButtonData("戻る", "RETURN_HOME");
 
     public ButtonData getLoadButtonData() { return loadButtonData; }
