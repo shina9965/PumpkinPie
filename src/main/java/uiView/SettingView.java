@@ -164,8 +164,18 @@ public class SettingView {
     public void showCredit() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("クレジット");
-        alert.setHeaderText("クレジット");
-        alert.setContentText("PumpkinPie");
+        alert.setHeaderText("開発体制");
+        alert.setContentText("Project Name：PumpkinPie\n\n" +
+        "Project Manager：山口 大翔\n\n" +
+        "Substitute Project Manager：工藤 大夢\n\n" +
+        "Designer：山本 剛士、濱坂 颯太\n\n" +
+        "Tech Lead：戸田 翔伍、フェリシア アイザイー\n\n" +
+        "Quality Assurance：工藤 大夢"
+    );
+
+    // 名前が途中で切れないように横幅を広げる
+    alert.getDialogPane().setPrefWidth(650);
+
         alert.showAndWait();
     }
 
