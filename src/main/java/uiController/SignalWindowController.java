@@ -139,7 +139,7 @@ public class SignalWindowController extends WindowController implements SignalCl
     System.out.println("SignalWindowController: onSaveSignal");
 
     try {
-      signalFileManager.exportSelectedFile(signalWindowModel.getOriginalSignal());
+      signalFileManager.exportSelectedFile(signalWindowModel.getInverseSignal());
     } 
     catch (IOException e) {
       e.printStackTrace();

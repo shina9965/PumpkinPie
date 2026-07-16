@@ -1,7 +1,6 @@
 package waveletModel;
 
-import java.awt.Image;
-import transformation.RGB;
+
 
 /**
  * 画像ウェーブレット変換に使用するデータモデル
