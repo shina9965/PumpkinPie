@@ -196,16 +196,77 @@ public class ImageWindowModel {
         return result[0];
     }
 
-    private javafx.scene.image.Image getCoefficientImage(int type) {
+        private javafx.scene.image.Image getCoefficientImage(int type) {
         javafx.scene.image.Image[] result = {null};
-        BoolEx.ifTrueElse(currentMode == Mode.NORMAL, 
-            () -> result[0] = getSingleChannelCoefficientImage(rModel, type),
+
+        BoolEx.ifTrueElse(
+            currentMode == Mode.NORMAL,
             () -> {
-                BoolEx.ifTrueElse(currentMode == Mode.R, () -> result[0] = getSingleChannelCoefficientImage(rModel, type));
-                BoolEx.ifTrueElse(currentMode == Mode.G, () -> result[0] = getSingleChannelCoefficientImage(gModel, type));
-                BoolEx.ifTrueElse(currentMode == Mode.B, () -> result[0] = getSingleChannelCoefficientImage(bModel, type));
+                double[][] rData = getCoefficientData(rModel, type);
+                double[][] gData = getCoefficientData(gModel, type);
+                double[][] bData = getCoefficientData(bModel, type);
+
+                double[][] average =
+                    averageCoefficient(rData, gData, bData);
+
+                BoolEx.ifTrueElse(
+                    type == 0,
+                    () -> result[0] =
+                        graphs.createGrayscaleImage(average),
+                    () -> result[0] =
+                        graphs.createCoefficientImage(average)
+                );
+            },
+            () -> {
+                BoolEx.ifTrueElse(
+                    currentMode == Mode.R,
+                    () -> result[0] =
+                        getSingleChannelCoefficientImage(rModel, type)
+                );
+
+                BoolEx.ifTrueElse(
+                    currentMode == Mode.G,
+                    () -> result[0] =
+                        getSingleChannelCoefficientImage(gModel, type)
+                );
+
+                BoolEx.ifTrueElse(
+                    currentMode == Mode.B,
+                    () -> result[0] =
+                        getSingleChannelCoefficientImage(bModel, type)
+                );
             }
         );
+
+        return result[0];
+    }
+
+    private double[][] getCoefficientData(
+        ImageWaveletModel model,
+        int type
+    ) {
+        double[][][] result = {null};
+
+        BoolEx.ifTrueElse(
+            type == 0,
+            () -> result[0] = model.getLl()
+        );
+
+        BoolEx.ifTrueElse(
+            type == 1,
+            () -> result[0] = model.getLh()
+        );
+
+        BoolEx.ifTrueElse(
+            type == 2,
+            () -> result[0] = model.getHl()
+        );
+
+        BoolEx.ifTrueElse(
+            type == 3,
+            () -> result[0] = model.getHh()
+        );
+
         return result[0];
     }
     
@@ -216,6 +277,22 @@ public class ImageWindowModel {
         BoolEx.ifTrueElse(type == 2, () -> result[0] = graphs.createCoefficientImage(model.getHl()));
         BoolEx.ifTrueElse(type == 3, () -> result[0] = graphs.createCoefficientImage(model.getHh()));
         return result[0];
+    }
+
+    private double[][] averageCoefficient(double[][] rData,double[][] gData,double[][] bData) {
+        int rows = rData.length;
+        int cols = rData[0].length;
+
+        double[][] average = new double[rows][cols];
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                average[y][x] =
+                    (rData[y][x] + gData[y][x] + bData[y][x]) / 3.0;
+            }
+        }
+
+        return average;
     }
 
     public javafx.scene.image.Image getLlImage() { return getCoefficientImage(0); }

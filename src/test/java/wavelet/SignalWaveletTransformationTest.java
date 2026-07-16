@@ -1,9 +1,13 @@
 package wavelet;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import waveletModel.SignalWaveletModel;
 import transformation.SignalWaveletTransformation;
+import uiModel.SettingModel;
 
 class SignalWaveletTransformationTest {
 
@@ -52,16 +56,32 @@ class SignalWaveletTransformationTest {
         );
     }
 
+    @BeforeEach
+        void setUp() {
+            SettingModel settingModel = new SettingModel();
+            settingModel.setAdoptionRate(100);
+            settingModel.applyAdoptionRate();
+        }
+
+        @AfterEach
+        void tearDown() {
+            SettingModel settingModel = new SettingModel();
+            settingModel.resetAppliedRateToDefault();
+        }
+
     @Test
     void 偶数長の信号を変換して逆変換すると元に戻る() {
-        SignalWaveletTransformation transformation = new SignalWaveletTransformation();
+
+        SignalWaveletTransformation transformation =
+            new SignalWaveletTransformation();
 
         double[] original = {10.0, 6.0, 4.0, 2.0};
 
         transformation.changeWaveletData(original);
         transformation.startWaveletTransformation();
 
-        SignalWaveletModel result = transformation.startInverseWaveletTransformation();
+        SignalWaveletModel result =
+            transformation.startInverseWaveletTransformation();
 
         assertArrayEquals(
             original,
