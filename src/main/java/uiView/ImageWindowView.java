@@ -17,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import listener.ActionListener;
+import listener.ImageClickListener;
 import uiController.ImageWindowController;
 import uiModel.ImageWindowModel;
 import javafx.util.Duration;
@@ -172,7 +173,7 @@ public class ImageWindowView {
         HBox modeBox = new HBox(10, new Label("モード: "), normalMode, rMode, gMode, bMode);
         modeBox.setAlignment(Pos.CENTER);
 
-        HBox leftButtons = new HBox(30, loadButton, saveButton, modeBox);
+        HBox leftButtons = new HBox(30, saveButton, loadButton, modeBox);
         HBox rightButtons = new HBox(returnButton);
 
         HBox buttonBox = new HBox(300);

@@ -75,11 +75,11 @@ public class SettingView {
 
         applyButton.setPrefWidth(100);
         resetButton.setPrefWidth(100);
-        backButton.setPrefWidth(120);
+        exitButton.setPrefWidth(120);
         creditButton.setPrefWidth(120);
 
-        exitButton.setPrefWidth(220);
-        exitButton.setPrefHeight(60);
+        backButton.setPrefWidth(220);
+        backButton.setPrefHeight(60);
     }
 
     public void layoutComponents() {
@@ -108,20 +108,24 @@ public class SettingView {
         HBox creditArea = new HBox(creditButton);
         creditArea.setAlignment(Pos.CENTER_RIGHT);
 
-        HBox backArea = new HBox(backButton);
-        backArea.setAlignment(Pos.CENTER_RIGHT);
+        HBox exitArea = new HBox(exitButton);
+        exitArea.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox rightArea = new VBox(15, creditArea, applyResetArea, backArea);
+        // 「アプリを終了」だけ30px下へ移動
+        exitArea.setTranslateY(30);
+
+
+        VBox rightArea = new VBox(15, creditArea, applyResetArea, exitArea);
         rightArea.setAlignment(Pos.CENTER_RIGHT);
 
         HBox centerArea = new HBox(30, rateArea, rightArea);
         centerArea.setAlignment(Pos.CENTER);
 
-        HBox exitArea = new HBox(exitButton);
-        exitArea.setAlignment(Pos.CENTER);
-        exitArea.setPadding(new Insets(40, 0, 0, 0));
+        HBox backArea = new HBox(backButton);
+        backArea.setAlignment(Pos.CENTER);
+        backArea.setPadding(new Insets(40, 0, 0, 0));
 
-        VBox mainArea = new VBox(30, centerArea, exitArea);
+        VBox mainArea = new VBox(30, centerArea, backArea);
         mainArea.setAlignment(Pos.CENTER);
 
         root.setTop(titleArea);
@@ -160,8 +164,18 @@ public class SettingView {
     public void showCredit() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("クレジット");
-        alert.setHeaderText("クレジット");
-        alert.setContentText("PumpkinPie");
+        alert.setHeaderText("開発体制");
+        alert.setContentText("Project Name：PumpkinPie\n\n" +
+        "Project Manager：山口 大翔\n\n" +
+        "Substitute Project Manager：工藤 大夢\n\n" +
+        "Designer：山本 剛士、濱坂 颯太\n\n" +
+        "Tech Lead：戸田 翔伍、フェリシア アイザイー\n\n" +
+        "Quality Assurance：工藤 大夢"
+    );
+
+    // 名前が途中で切れないように横幅を広げる
+    alert.getDialogPane().setPrefWidth(650);
+
         alert.showAndWait();
     }
 
