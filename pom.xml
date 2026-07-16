@@ -66,6 +66,8 @@
 </dependencies>
 
   <build>
+  <finalName>PumpkinPie</finalName>
+
   <plugins>
 
     <plugin>
