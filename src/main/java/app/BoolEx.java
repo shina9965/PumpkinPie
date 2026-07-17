@@ -48,9 +48,9 @@ public class BoolEx {
    * @param end
    * @param action
    */
-  public static void forTrue(int start, int end, Runnable action) {
+  public static void forTrue(int start, int end, java.util.function.IntConsumer action) {
     for (int i = start; i < end; i++) {
-      action.run();
+      action.accept(i);
     }
   }
 
