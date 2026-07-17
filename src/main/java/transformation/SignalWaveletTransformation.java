@@ -105,9 +105,9 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
                     adoptionRate <= 0,
                     () -> {
 
-                        for (int index = halfLength; index < filtered.length; index++) {
+                        app.BoolEx.forTrue(halfLength, filtered.length, index -> {
                             filtered[index] = 0.0;
-                        }
+                        });
                     },
                     () -> {
                         int waveletLength = coefficients.length - halfLength;
@@ -115,15 +115,15 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
 
                         double[] absoluteValues = new double[waveletLength];
 
-                        for (int index = 0; index < waveletLength; index++) {
+                        app.BoolEx.forTrue(0, waveletLength, index -> {
                             absoluteValues[index] = Math.abs(coefficients[halfLength + index]);
-                        }
+                        });
 
                         Arrays.sort(absoluteValues);
 
                         double threshold = absoluteValues[waveletLength - keepCount];
 
-                        for (int index = halfLength; index < filtered.length; index++) {
+                        app.BoolEx.forTrue(halfLength, filtered.length, index -> {
                             int currentIndex = index;
 
                             BoolEx.ifTrueElse(
@@ -131,7 +131,7 @@ public class SignalWaveletTransformation extends WaveletTransformation<SignalWav
                                 () -> filtered[currentIndex] = 0.0,
                                 () -> {}
                             );
-                        }
+                        });
                     }
                 );
             }

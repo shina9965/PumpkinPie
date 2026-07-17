@@ -98,7 +98,7 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         double[][] filtered = new double[height][width];
 
         int[] row = {0};
-        BoolEx.forTrue(0, height, () -> {
+        BoolEx.forTrue(0, height, _y -> {
             System.arraycopy(coefficients[row[0]], 0, filtered[row[0]], 0, width);
             row[0]++;
         });
@@ -114,9 +114,9 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
                     adoptionRate <= 0,
                     () -> {
                         int[] r = {0};
-                        BoolEx.forTrue(0, height, () -> {
+                        BoolEx.forTrue(0, height, _y -> {
                             int[] c = {0};
-                            BoolEx.forTrue(0, width, () -> {
+                            BoolEx.forTrue(0, width, _x -> {
                                 BoolEx.ifTrueElse(
                                     r[0] >= halfHeight || c[0] >= halfWidth,
                                     () -> filtered[r[0]][c[0]] = 0.0
@@ -134,9 +134,9 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
                         int[] index = {0};
 
                         int[] r = {0};
-                        BoolEx.forTrue(0, height, () -> {
+                        BoolEx.forTrue(0, height, _y -> {
                             int[] c = {0};
-                            BoolEx.forTrue(0, width, () -> {
+                            BoolEx.forTrue(0, width, _x -> {
                                 BoolEx.ifTrueElse(
                                     r[0] >= halfHeight || c[0] >= halfWidth,
                                     () -> {
@@ -154,9 +154,9 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
                         double threshold = absoluteValues[coefficientCount - keepCount];
 
                         r[0] = 0;
-                        BoolEx.forTrue(0, height, () -> {
+                        BoolEx.forTrue(0, height, _y -> {
                             int[] c = {0};
-                            BoolEx.forTrue(0, width, () -> {
+                            BoolEx.forTrue(0, width, _x -> {
                                 int currentRow = r[0];
                                 int currentCol = c[0];
 
@@ -210,7 +210,7 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         );
         double[][] result = new double[height][width[0]];
         int[] row         = {0};
-        BoolEx.forTrue(0, height, () -> {
+        BoolEx.forTrue(0, height, _y -> {
             result[row[0]] = applyWaveletToRow(image[row[0]]);
             row[0]++;
         });
@@ -233,7 +233,7 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         );
         double[][] result = new double[height][width[0]];
         int[] row         = {0};
-        BoolEx.forTrue(0, height, () -> {
+        BoolEx.forTrue(0, height, _y -> {
             result[row[0]] = applyInverseWaveletToRow(image[row[0]]);
             row[0]++;
         });
@@ -256,9 +256,9 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         );
         double[][] result = new double[cols[0]][rows];
         int[] row         = {0};
-        BoolEx.forTrue(0, rows, () -> {
+        BoolEx.forTrue(0, rows, _y -> {
             int[] col = {0};
-            BoolEx.forTrue(0, cols[0], () -> {
+            BoolEx.forTrue(0, cols[0], _x -> {
                 result[col[0]][row[0]] = matrix[row[0]][col[0]];
                 col[0]++;
             });
@@ -293,7 +293,7 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         double[][] padded = new double[dstHeight[0]][dstWidth[0]];
 
         int[] row = {0};
-        BoolEx.forTrue(0, srcHeight, () -> {
+        BoolEx.forTrue(0, srcHeight, _y -> {
             System.arraycopy(image[row[0]], 0, padded[row[0]], 0, srcWidth[0]);
             BoolEx.ifTrueElse(
                 needsColPad,
@@ -322,7 +322,7 @@ public class ImageWaveletTransformation extends WaveletTransformation<ImageWavel
         int width         = imageWaveletModel.getOriginalWidth();
         double[][] result = new double[height][width];
         int[] row         = {0};
-        BoolEx.forTrue(0, height, () -> {
+        BoolEx.forTrue(0, height, _y -> {
             System.arraycopy(image[row[0]], 0, result[row[0]], 0, width);
             row[0]++;
         });

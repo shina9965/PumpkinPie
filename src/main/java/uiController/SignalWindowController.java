@@ -180,12 +180,13 @@ public class SignalWindowController extends WindowController implements SignalCl
   private Stage getShowingStage() {
     Stage[] showingStage = {new Stage()};
 
-    for (Window window : Window.getWindows()) {
+    app.BoolEx.forTrue(0, javafx.stage.Window.getWindows().size(), index -> {
+      javafx.stage.Window window = javafx.stage.Window.getWindows().get(index);
       BoolEx.ifTrueElse(
           window instanceof Stage && window.isShowing(),
           () -> showingStage[0] = (Stage) window
        );
-    }
+    });
 
     return showingStage[0];
   }
