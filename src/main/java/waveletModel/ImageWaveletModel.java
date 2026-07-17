@@ -180,7 +180,7 @@ public class ImageWaveletModel extends WaveletModel {
         double[][] result =
             new double[halfHeight][halfWidth];
 
-        for (int row = 0; row < halfHeight; row++) {
+        app.BoolEx.forTrue(0, halfHeight, row -> {
             System.arraycopy(
                 transformedImage[startRow + row],
                 startCol,
@@ -188,7 +188,7 @@ public class ImageWaveletModel extends WaveletModel {
                 0,
                 halfWidth
             );
-        }
+        });
 
         return result;
     }

@@ -46,7 +46,7 @@ public abstract class WaveletTransformation<T1 extends WaveletModel, D> { //chan
         System.arraycopy(coefficients, 0,      low,  0, halfLen);
         System.arraycopy(coefficients, halfLen, high, 0, halfLen);
 
-        BoolEx.forTrue(0, halfLen, () -> {
+        BoolEx.forTrue(0, halfLen, _i -> {
             restored[idx[0] * 2]     = restoreLeft (low[idx[0]], high[idx[0]]);
             restored[idx[0] * 2 + 1] = restoreRight(low[idx[0]], high[idx[0]]);
             idx[0]++;
@@ -81,7 +81,7 @@ public abstract class WaveletTransformation<T1 extends WaveletModel, D> { //chan
         double[] high = new double[halfLen];
         int[] idx = {0};
  
-        BoolEx.forTrue(0, halfLen, () -> {
+        BoolEx.forTrue(0, halfLen, _i -> {
             low [idx[0]] = calculateLow (coefficients[idx[0] * 2], coefficients[idx[0] * 2 + 1]);
             high[idx[0]] = calculateHigh(coefficients[idx[0] * 2], coefficients[idx[0] * 2 + 1]);
             idx[0]++;

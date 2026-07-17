@@ -218,13 +218,13 @@ public class SignalWindowView {
     double maxAbs = getMaxAbs(values);
     double xStep = (width - 40) / Math.max(values.length - 1, 1);
 
-    for (int index = 0; index < values.length; index++) {
+    app.BoolEx.forTrue(0, values.length, index -> {
       double x = 20 + index * xStep;
       double y = centerY - values[index] / maxAbs * (height / 3);
 
-      Circle point = new Circle(x, y, 3);
+      javafx.scene.shape.Circle point = new javafx.scene.shape.Circle(x, y, 3);
       pane.getChildren().add(point);
-    }
+    });
   }
   
   private void drawClickableSignal(Pane pane, double[] values, String title, boolean editable) {
@@ -250,11 +250,11 @@ public class SignalWindowView {
   double maxAbs = getMaxAbs(values);
   double xStep = (width - 40) / Math.max(values.length - 1, 1);
 
-  for (int index = 0; index < values.length; index++) {
+  app.BoolEx.forTrue(0, values.length, index -> {
     double x = 20 + index * xStep;
     double y = centerY - values[index] / maxAbs * (height / 3);
 
-    Circle point = new Circle(x, y, 3);
+    javafx.scene.shape.Circle point = new javafx.scene.shape.Circle(x, y, 3);
 
     int selectedIndex = index;
     double selectedValue = values[index];
@@ -262,7 +262,7 @@ public class SignalWindowView {
     BoolEx.ifTrueElse(editable, () -> {
       point.setOnMouseClicked(event -> {
         
-        var listener = (SignalClickListener) actionListener;
+        var listener = (listener.SignalClickListener) actionListener;
         listener.onEditCoefficient(selectedIndex);
         System.out.println("クリックされた点 index = " + selectedIndex);
         System.out.println("クリックされた点 value = " + selectedValue);
@@ -270,17 +270,17 @@ public class SignalWindowView {
     });
 
     pane.getChildren().add(point);
-  }
+  });
 }
 
   // 配列の中で絶対値が最大の値を求める
   private double getMaxAbs(double[] values) {
-    double max = 1.0;
+    double[] max = {1.0};
 
-    for (double value : values) {
-      max = Math.max(max, Math.abs(value));
-    }
+    app.BoolEx.forTrue(0, values.length, index -> {
+      max[0] = Math.max(max[0], Math.abs(values[index]));
+    });
 
-    return max;
+    return max[0];
   }
 }

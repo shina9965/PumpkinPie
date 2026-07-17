@@ -152,11 +152,11 @@ public class RGB{
 
         double[][] result = new double[rows][cols];
 
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
+        app.BoolEx.forTrue(0, rows, y -> {
+            app.BoolEx.forTrue(0, cols, x -> {
                 result[y][x] = mat.get(y, x)[0];
-            }
-        }
+            });
+        });
 
         return result;
     }
@@ -167,12 +167,12 @@ public class RGB{
 
         Mat mat = new Mat(rows, cols, CvType.CV_8UC1);
 
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
+        app.BoolEx.forTrue(0, rows, y -> {
+            app.BoolEx.forTrue(0, cols, x -> {
                 double value = Math.max(0, Math.min(255, data[y][x]));
                 mat.put(y, x, value);
-            }
-        }
+            });
+        });
 
         return mat;
     }

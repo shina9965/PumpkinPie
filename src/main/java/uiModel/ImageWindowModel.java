@@ -285,12 +285,12 @@ public class ImageWindowModel {
 
         double[][] average = new double[rows][cols];
 
-        for (int y = 0; y < rows; y++) {
-            for (int x = 0; x < cols; x++) {
+        app.BoolEx.forTrue(0, rows, y -> {
+            app.BoolEx.forTrue(0, cols, x -> {
                 average[y][x] =
                     (rData[y][x] + gData[y][x] + bData[y][x]) / 3.0;
-            }
-        }
+            });
+        });
 
         return average;
     }

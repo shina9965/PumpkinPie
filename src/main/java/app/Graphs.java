@@ -19,9 +19,9 @@ public class Graphs {
         // 最大絶対値を求める
         double[] maxAbs = {0.0};
         int[] r = {0};
-        BoolEx.forTrue(0, rows, () -> {
+        BoolEx.forTrue(0, rows, _y -> {
             int[] c = {0};
-            BoolEx.forTrue(0, cols, () -> {
+            BoolEx.forTrue(0, cols, _x -> {
                 double abs = Math.abs(data[r[0]][c[0]]);
                 BoolEx.ifTrueElse(abs > maxAbs[0], () -> maxAbs[0] = abs);
                 c[0]++;
@@ -31,9 +31,9 @@ public class Graphs {
 
         // 0を黒、最大値を白として描画
         int[] y = {0};
-        BoolEx.forTrue(0, rows, () -> {
+        BoolEx.forTrue(0, rows, _y -> {
             int[] x = {0};
-            BoolEx.forTrue(0, cols, () -> {
+            BoolEx.forTrue(0, cols, _x -> {
                 double val = Math.abs(data[y[0]][x[0]]);
                 double norm = maxAbs[0] == 0 ? 0 : val / maxAbs[0];
                 writer.setColor(x[0], y[0], Color.gray(norm));
@@ -57,9 +57,9 @@ public class Graphs {
         PixelWriter writer = image.getPixelWriter();
 
         int[] y = {0};
-        BoolEx.forTrue(0, rows, () -> {
+        BoolEx.forTrue(0, rows, _y -> {
             int[] x = {0};
-            BoolEx.forTrue(0, cols, () -> {
+            BoolEx.forTrue(0, cols, _x -> {
                 double val = data[y[0]][x[0]];
                 double[] clamped = {val};
                 BoolEx.ifTrueElse(clamped[0] < 0, () -> clamped[0] = 0);
@@ -85,9 +85,9 @@ public class Graphs {
         PixelWriter writer = image.getPixelWriter();
 
         int[] y = {0};
-        BoolEx.forTrue(0, rows, () -> {
+        BoolEx.forTrue(0, rows, _y -> {
             int[] x = {0};
-            BoolEx.forTrue(0, cols, () -> {
+            BoolEx.forTrue(0, cols, _x -> {
                 double r = rData[y[0]][x[0]];
                 double g = gData[y[0]][x[0]];
                 double b = bData[y[0]][x[0]];
